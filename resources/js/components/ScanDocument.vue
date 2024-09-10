@@ -16,9 +16,9 @@
       </div>
     </div>
   </template>
-  
+
   <script>
-  import Tesseract from 'tesseract.js';
+  /*import Tesseract from 'tesseract.js';
   import NaiveBayes from 'naive-bayes';
   
   export default {
@@ -83,7 +83,7 @@
         this.classifier.learn(item.text, item.category);
       });
     }
-  };
+  };*/
   </script>
   
   <style scoped>
