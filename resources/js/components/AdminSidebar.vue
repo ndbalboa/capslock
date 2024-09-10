@@ -7,6 +7,11 @@
         </router-link>
       </li>
       <li class="nav-item">
+        <router-link class="nav-link" to="/admin-dashboard/scan-document">
+          <i class="bi bi-printer me-2"></i> Scan Document
+        </router-link>
+      </li>
+      <li class="nav-item">
         <router-link class="nav-link" to="/admin-dashboard/upload-document">
           <i class="bi bi-upload me-2"></i> Upload Document
         </router-link>
@@ -39,7 +44,7 @@
       </li>
       <li class="nav-item" @click.prevent="toggleEmployeesSubMenu">
         <a class="nav-link d-flex align-items-center">
-          <i class="bi bi-folder2-open me-2"></i>
+          <i class="bi bi-people-fill me-2"></i>
           <span>Employees</span>
           <i :class="['bi', isEmployeesSubMenuOpen ? 'bi-caret-down-fill' : 'bi-caret-left-fill', 'ms-auto']"></i>
         </a>
@@ -52,7 +57,7 @@
             </li>
             <li class="nav-item">
               <router-link class="nav-link" to="/admin-dashboard/employee/list">
-                <i class="bi bi-list-ul me-2"></i> List of Employee
+                <i class="bi bi-list-ul me-2"></i> List of Employees
               </router-link>
             </li>
             <li class="nav-item">

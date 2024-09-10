@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes; // Import SoftDeletes
 
 class Employee extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes; // Use SoftDeletes trait
 
     protected $fillable = [
         'lastName',
@@ -42,11 +43,14 @@ class Employee extends Model
         'residential_province',
         'residential_country',
         'residential_zipcode',
+        'status',
     ];
+
+    // Specify that deleted_at should be managed by soft deletes
+    protected $dates = ['deleted_at']; 
+
     public function user()
     {
         return $this->hasOne(User::class);
     }
 }
-
-

@@ -235,7 +235,7 @@ export default {
       })
       .then(response => {
         alert('Employee added successfully!');
-        this.$router.push('/admin/employees');
+        this.$router.push('/api/admin/employees');
       })
       .catch(error => {
         console.error('There was an error adding the employee:', error);

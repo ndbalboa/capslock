@@ -47,6 +47,10 @@
       </div>
 
       <button type="submit" class="submit-button">Create Account</button>
+
+      <!-- Notification Messages -->
+      <div v-if="successMessage" class="alert alert-success mt-3">{{ successMessage }}</div>
+      <div v-if="errorMessage" class="alert alert-danger mt-3">{{ errorMessage }}</div>
     </form>
   </div>
 </template>
@@ -65,6 +69,8 @@ export default {
       password: '',
       confirmPassword: '',
       role: 'user',
+      successMessage: '',
+      errorMessage: '',
     };
   },
   methods: {
@@ -81,16 +87,31 @@ export default {
           role: this.role,
         });
 
-        console.log('User created successfully:', response.data);
+        this.successMessage = 'User created successfully.';
+        this.errorMessage = '';
+        this.clearForm(); // Optional: Clear form fields after successful creation
       } catch (error) {
         if (error.response && error.response.status === 422) {
-          console.error('Validation errors:', error.response.data.errors);
+          this.errorMessage = 'Validation errors: ' + Object.values(error.response.data.errors).flat().join(', ');
+        } else if (error.response && error.response.status === 409) {
+          this.errorMessage = 'Employee ID or Username already in use.';
         } else {
-          console.error('Error creating user:', error);
+          this.errorMessage = 'Error creating user.';
         }
+        this.successMessage = '';
       }
     },
-  },
+    clearForm() {
+      this.employee_id = '';
+      this.firstName = '';
+      this.lastName = '';
+      this.email = '';
+      this.username = '';
+      this.password = '';
+      this.confirmPassword = '';
+      this.role = 'user';
+    }
+  }
 };
 </script>
 
@@ -99,7 +120,6 @@ export default {
   padding: 30px;
   background-color: #f3f4f6;
   border-radius: 10px;
-  
   margin: 0 auto;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -163,5 +183,23 @@ select:focus {
 
 .submit-button:hover {
   background-color: #0056b3;
+}
+
+.alert {
+  padding: 15px;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
 }
 </style>

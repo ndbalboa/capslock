@@ -26,7 +26,23 @@ class LoginController extends Controller
         }
 
         // Get the authenticated user
-        $user = $request->user();
+        $user = Auth::user();
+
+        // Check if the user's employee is soft-deleted
+        if ($user->employee && $user->employee->trashed()) {
+            Auth::logout();
+            throw ValidationException::withMessages([
+                'username' => ['Your account is associated with a deactivated employee record.'],
+            ]);
+        }
+
+        // Check if the user's status is active
+        if ($user->status !== 'active') {
+            Auth::logout();
+            throw ValidationException::withMessages([
+                'username' => ['Your account is inactive.'],
+            ]);
+        }
 
         // Log the login activity
         Activity::create([
@@ -41,7 +57,7 @@ class LoginController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'Bearer',
-            'role' => $user->role, // Assuming your User model has a 'role' attribute
+            'role' => $user->role,
         ]);
     }
 

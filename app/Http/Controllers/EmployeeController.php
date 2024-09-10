@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Employee;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -104,29 +105,6 @@ class EmployeeController extends Controller
         return response()->json(['message' => 'Employee updated successfully', 'employee' => $employee]);
     }
 
-    /**
-     * Remove the specified employee from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function destroy($id)
-    {
-        $employee = Employee::find($id);
-
-        if (!$employee) {
-            return response()->json(['message' => 'Employee not found'], 404);
-        }
-
-        // Delete profile image if exists
-        if ($employee->profileImage && Storage::exists('public/' . $employee->profileImage)) {
-            Storage::delete('public/' . $employee->profileImage);
-        }
-
-        $employee->delete();
-
-        return response()->json(['message' => 'Employee deleted successfully']);
-    }
 
     /**
      * Get validation rules for employee creation and updating.
@@ -222,63 +200,45 @@ class EmployeeController extends Controller
         return $request->file('profileImage')->store('profile_images', 'public');
     }
 
+    /**
+     * Fetch authenticated user profile.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function fetchUserProfile()
     {
         $user = Auth::user();
         return response()->json($user);
     }
 
+    /**
+     * Update the authenticated user profile.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function updateUserProfile(Request $request)
-{
-    try {
-        // Validate incoming data
-        $validatedData = $request->validate([
-            'lastName' => 'required|string|max:255',
-            'firstName' => 'required|string|max:255',
-            'middleName' => 'nullable|string|max:255',
-            'sex' => 'nullable|string|max:255',
-            'civilStatus' => 'nullable|string|max:255',
-            'dateOfBirth' => 'nullable|date',
-            'religion' => 'nullable|string|max:255',
-            'emailAddress' => 'nullable|email|max:255',
-            'phoneNumber' => 'nullable|string|max:20',
-            'gsisId' => 'nullable|string|max:255',
-            'pagibigId' => 'nullable|string|max:255',
-            'philhealthId' => 'nullable|string|max:255',
-            'sssNo' => 'nullable|string|max:255',
-            'agencyEmploymentNo' => 'nullable|string|max:255',
-            'taxId' => 'nullable|string|max:255',
-            'academicRank' => 'nullable|string|max:255',
-            'universityPosition' => 'nullable|string|max:255',
-            'permanent_street' => 'nullable|string|max:255',
-            'permanent_barangay' => 'nullable|string|max:255',
-            'permanent_city' => 'nullable|string|max:255',
-            'permanent_province' => 'nullable|string|max:255',
-            'permanent_country' => 'nullable|string|max:255',
-            'permanent_zipcode' => 'nullable|string|max:10',
-            'residential_street' => 'nullable|string|max:255',
-            'residential_barangay' => 'nullable|string|max:255',
-            'residential_city' => 'nullable|string|max:255',
-            'residential_province' => 'nullable|string|max:255',
-            'residential_country' => 'nullable|string|max:255',
-            'residential_zipcode' => 'nullable|string|max:10',
-        ]);
+    {
+        try {
+            $validatedData = $request->validate($this->getValidationRules());
 
-        $user = Auth::user();
+            $user = Auth::user();
+            $user->update($validatedData);
 
-        // Update user profile
-        $user->update($validatedData);
+            return response()->json($user);
 
-        return response()->json($user);
-
-    } catch (\Exception $e) {
-        // Log the error
-        \Log::error('Error updating profile: ' . $e->getMessage());
-        
-        return response()->json(['error' => 'Unable to update profile'], 500);
+        } catch (\Exception $e) {
+            Log::error('Error updating profile: ' . $e->getMessage());
+            return response()->json(['error' => 'Unable to update profile'], 500);
+        }
     }
-}
 
+    /**
+     * Upload a profile image for the authenticated user.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function uploadImage(Request $request)
     {
         $request->validate([
@@ -287,16 +247,68 @@ class EmployeeController extends Controller
 
         if ($request->hasFile('profileImage')) {
             $file = $request->file('profileImage');
-            $filePath = $file->store('public/profile_images');
-            $fileUrl = Storage::url($filePath);
-
+            $path = $file->store('profile_images', 'public');
+            
             $user = Auth::user();
-            $user->profileImage = $fileUrl;
+            $user->profileImage = $path;
             $user->save();
 
-            return response()->json(['url' => $fileUrl]);
+            return response()->json(['profileImage' => $path]);
         }
 
-        return response()->json(['error' => 'No image uploaded'], 400);
+        return response()->json(['message' => 'No image uploaded'], 400);
     }
+    public function destroy($id)
+    {
+        $employee = Employee::find($id);
+
+        if (!$employee) {
+            return response()->json(['message' => 'Employee not found'], 404);
+        }
+
+        // Soft delete the employee
+        $employee->delete();
+
+        // Deactivate the associated user account
+        if ($employee->user) {
+            $user = $employee->user;
+            $user->status = 'inactive';
+            $user->save();
+        }
+
+        return response()->json(['message' => 'Employee deactivated successfully']);
+    }
+public function getDeactivatedEmployees()
+{
+    // Fetch only soft-deleted employees
+    $deactivatedEmployees = Employee::onlyTrashed()->with('user')->get();
+
+    return response()->json($deactivatedEmployees);
+}
+public function restore($id)
+{
+    $employee = Employee::withTrashed()->find($id);
+
+    if (!$employee) {
+        return response()->json(['message' => 'Employee not found'], 404);
+    }
+
+    $employee->restore();
+
+    return response()->json(['message' => 'Employee restored successfully']);
+}
+public function forceDelete($id)
+{
+    $employee = Employee::withTrashed()->find($id);
+
+    if (!$employee) {
+        return response()->json(['message' => 'Employee not found'], 404);
+    }
+
+    $employee->forceDelete();
+
+    return response()->json(['message' => 'Employee permanently deleted successfully']);
+}
+
+
 }

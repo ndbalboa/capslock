@@ -31,22 +31,21 @@ return new class extends Migration
             $table->string('academicRank');
             $table->string('universityPosition');
             $table->string('profileImage')->nullable();
-
-            // Permanent Address
             $table->string('permanent_street')->nullable();
             $table->string('permanent_barangay')->nullable();
             $table->string('permanent_city')->nullable();
             $table->string('permanent_province')->nullable();
             $table->string('permanent_country')->nullable();
             $table->string('permanent_zipcode')->nullable();
-
-            // Residential Address
             $table->string('residential_street')->nullable();
             $table->string('residential_barangay')->nullable();
             $table->string('residential_city')->nullable();
             $table->string('residential_province')->nullable();
             $table->string('residential_country')->nullable();
             $table->string('residential_zipcode')->nullable();
+            $table->enum('status', ['active', 'deactivated'])->default('active');
+            $table->softDeletes(); 
+
             $table->timestamps();
         });
     }

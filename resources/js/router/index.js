@@ -11,7 +11,6 @@ import DocumentsTravelOrder from '../components/DocumentsTravelOrder.vue';
 import DocumentsOfficeOrder from '../components/DocumentsOfficeOrder.vue';
 import AddNewEmployee from '../components/AddNewEmployee.vue';
 import ListOfEmployee from '../components/ListOfEmployee.vue';
-import DeactivatedEmployee from '../components/DeactivatedEmployee.vue';
 import Mail from '../components/Mail.vue';
 import Settings from '../components/Settings.vue';
 import UserProfile from '../components/UserProfile.vue';
@@ -21,6 +20,9 @@ import EmployeeDocuments from '../components/EmployeeDocuments.vue';
 import ChangeCredentials from '../components/ChangeCredentials.vue';
 import EmployeeDetails from '../components/EmployeeDetails.vue';
 import Logout from '../components/Logout.vue';
+import DeactivatedEmployees from '../components/DeactivatedEmployees.vue';
+import ScanDocument from '../components/ScanDocument.vue';
+import AutoFillDocument from '../components/AutoFillDocument.vue';
 
 function isAuthenticated() {
   return !!localStorage.getItem('token');
@@ -47,15 +49,17 @@ const routes = [
     children: [
       { path: '', component: AdminDashboard },
       { path: 'upload-document', component: UploadDocument },
+      { path: 'scan-document', component: ScanDocument },
+      { path: 'autofill-document', component: AutoFillDocument },
       { path: 'search-document', component: SearchDocument },
       { path: 'documents/travel-order', component: DocumentsTravelOrder },
       { path: 'documents/office-order', component: DocumentsOfficeOrder },
       { path: 'employee/add', component: AddNewEmployee },
       { path: 'employee/list', component: ListOfEmployee },
-      { path: 'employee/deactivated', component: DeactivatedEmployee },
-      { path: 'employee/:id', name: 'EmployeeInformation', component: EmployeeInformation }, // View specific employee info
+      { path: 'employee/deactivated', component: DeactivatedEmployees },
+      { path: 'employee/:id', name: 'EmployeeInformation', component: EmployeeInformation }, 
       { path: 'createuser', component: CreateUserAccount },
-      { path: '/admin/employee/:id', name: 'EmployeeDetails', component: EmployeeDetails }, // Added employee details route
+      { path: '/admin/employee/:id', name: 'EmployeeDetails', component: EmployeeDetails },
       { path: 'documents', name: 'EmployeeDocuments', component: EmployeeDocuments },
       { path: 'mail', component: Mail },
       { path: 'settings', component: Settings },

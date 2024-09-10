@@ -52,6 +52,6 @@ class User extends Authenticatable
     //added function can be deleted
     public function employee()
     {
-        return $this->belongsTo(Employee::class);
+        return $this->belongsTo(Employee::class, 'employee_id');
     }
 }
