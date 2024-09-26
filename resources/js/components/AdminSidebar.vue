@@ -25,20 +25,31 @@
         <a class="nav-link d-flex align-items-center">
           <i class="bi bi-folder2-open me-2"></i>
           <span>Documents</span>
+
           <i :class="['bi', isDocumentsSubMenuOpen ? 'bi-caret-down-fill' : 'bi-caret-left-fill', 'ms-auto']"></i>
         </a>
         <transition name="slide-fade">
           <ul v-show="isDocumentsSubMenuOpen" class="nav flex-column ms-3 submenu">
             <li class="nav-item">
-              <router-link class="nav-link" to="/admin-dashboard/documents/travel-order">
-                <i class="bi bi-file-earmark-text me-2"></i> Travel Order
+              <router-link class="nav-link" to="/admin-dashboard/documents/memorandums">
+                <i class="bi bi-file-earmark-text me-2"></i> memorandums
               </router-link>
             </li>
             <li class="nav-item">
-              <router-link class="nav-link" to="/admin-dashboard/documents/office-order">
-                <i class="bi bi-file-earmark-text me-2"></i> Office Order
+              <router-link class="nav-link" to="/admin-dashboard/documents/DBMDocuments">
+                <i class="bi bi-file-earmark-text me-2"></i> DBM Documents
               </router-link>
             </li>
+             <li class="nav-item">
+              <router-link class="nav-link" to="/admin-dashboard/documents/ReceordsOfficeDocs">
+                <i class="bi bi-file-earmark-text me-2"></i> Records Office Documents
+              </router-link>
+             </li>
+             <li class="nav-item">
+              <router-link class="nav-link" to="/admin-dashboard/documents/OtherDocs">
+                <i class="bi bi-file-earmark-text me-2"></i> Other Documents
+              </router-link>
+             </li>
           </ul>
         </transition>
       </li>

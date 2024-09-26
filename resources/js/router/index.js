@@ -7,8 +7,10 @@ import AdminDashboard from '../components/AdminDashboard.vue';
 import UserDashboard from '../components/UserDashboard.vue';
 import UploadDocument from '../components/UploadDocument.vue';
 import SearchDocument from '../components/SearchDocument.vue';
-import DocumentsTravelOrder from '../components/DocumentsTravelOrder.vue';
-import DocumentsOfficeOrder from '../components/DocumentsOfficeOrder.vue';
+import DocumentDBMDocuments from '../components/DocumentDBMDocuments.vue';
+import DocumentMemorandums from '../components/DocumentMemorandums.vue';
+import DocumentRecordsOfficeDocuments from '../components/DocumentRecordsOfficeDocs.vue';
+import DocumentOthers from '../components/DocumentOthers.vue';
 import AddNewEmployee from '../components/AddNewEmployee.vue';
 import ListOfEmployee from '../components/ListOfEmployee.vue';
 import Mail from '../components/Mail.vue';
@@ -52,8 +54,10 @@ const routes = [
       { path: 'scan-document', component: ScanDocument },
       { path: 'autofill-document', component: AutoFillDocument },
       { path: 'search-document', component: SearchDocument },
-      { path: 'documents/travel-order', component: DocumentsTravelOrder },
-      { path: 'documents/office-order', component: DocumentsOfficeOrder },
+      { path: 'documents/DBMDocuments', component: DocumentDBMDocuments },
+      { path: 'documents/Memorandums', component: DocumentMemorandums },
+      { path: 'documents/RecordsOfficeDocs', component: DocumentRecordsOfficeDocuments},
+      { path: 'documents/OtherDocs', component: DocumentOthers},
       { path: 'employee/add', component: AddNewEmployee },
       { path: 'employee/list', component: ListOfEmployee },
       { path: 'employee/deactivated', component: DeactivatedEmployees },
@@ -80,8 +84,10 @@ const routes = [
     children: [
       { path: '', component: UserDashboard },
       { path: 'search-document', component: SearchDocument },
-      { path: 'documents/travel-order', component: DocumentsTravelOrder },
-      { path: 'documents/office-order', component: DocumentsOfficeOrder },
+      { path: 'documents/DBMDocuments', component: DocumentDBMDocuments },
+      { path: 'documents/Memorandums', component: DocumentMemorandums },
+      { path: 'documents/RecordsOfficeDocs', component: DocumentRecordsOfficeDocuments},
+      { path: 'documents/OtherDocs', component: DocumentOthers},
       { path: 'user-profile', component: UserProfile }, // User profile view and edit
       { path: 'mail', component: Mail },
       { path: 'settings', component: Settings },
