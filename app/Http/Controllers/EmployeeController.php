@@ -260,7 +260,30 @@ class EmployeeController extends Controller
     }
     public function destroy($id)
     {
-        $employee = Employee::find($id);
+        $employee = Employee::findOrFail($id);
+
+    // Deactivate the employee
+    $employee->is_active = false;
+    $employee->save();
+
+    // Also deactivate the associated user account
+    if ($employee->user) {
+        $employee->user->is_active = false;
+        $employee->user->save();
+    }
+
+    return response()->json(['message' => 'Employee and associated user account have been deactivated.']);
+}
+public function getDeactivatedEmployees()
+{
+    // Fetch only soft-deleted employees
+    $deactivatedEmployees = Employee::onlyTrashed()->with('user')->get();
+
+    return response()->json($deactivatedEmployees);
+}
+public function restore($id)
+{
+    $employee = Employee::find($id);
 
         if (!$employee) {
             return response()->json(['message' => 'Employee not found'], 404);
@@ -278,25 +301,6 @@ class EmployeeController extends Controller
 
         return response()->json(['message' => 'Employee deactivated successfully']);
     }
-public function getDeactivatedEmployees()
-{
-    // Fetch only soft-deleted employees
-    $deactivatedEmployees = Employee::onlyTrashed()->with('user')->get();
-
-    return response()->json($deactivatedEmployees);
-}
-public function restore($id)
-{
-    $employee = Employee::withTrashed()->find($id);
-
-    if (!$employee) {
-        return response()->json(['message' => 'Employee not found'], 404);
-    }
-
-    $employee->restore();
-
-    return response()->json(['message' => 'Employee restored successfully']);
-}
 public function forceDelete($id)
 {
     $employee = Employee::withTrashed()->find($id);
@@ -309,6 +313,16 @@ public function forceDelete($id)
 
     return response()->json(['message' => 'Employee permanently deleted successfully']);
 }
-
+public function forceDeleteEmployee($id)
+    {
+        try {
+            $employee = Employee::withTrashed()->findOrFail($id);
+            $employee->forceDelete();
+            return response()->json(['message' => 'Employee permanently deleted.']);
+        } catch (\Exception $e) {
+            \Log::error('Error permanently deleting employee: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to permanently delete employee.'], 500);
+        }
+    }
 
 }

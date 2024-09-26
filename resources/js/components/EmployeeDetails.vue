@@ -166,7 +166,7 @@
           <button v-if="isEditing" @click="saveEmployeeDetails" class="btn btn-success me-2">Save</button>
           <button v-if="isEditing" @click="cancelEdit" class="btn btn-secondary">Cancel</button>
           <!-- Delete Button -->
-          <button @click="deleteEmployee" class="btn btn-danger ms-2">Delete Employee</button>
+          <button @click="softDeleteEmployee" class="btn btn-danger ms-2">Deactivate Employee</button>
         </div>
       </div>
     </div>
@@ -245,15 +245,15 @@ export default {
         this.selectedImage = null;
       }
     },
-    async deleteEmployee() {
-      if (confirm('Are you sure you want to delete this employee?')) {
+    async softDeleteEmployee() {
+      if (confirm('Are you sure you want to deactivate this employee?')) {
         try {
           await axios.delete(`/api/admin/employees/${this.employee.id}`);
-          alert('Employee has been deleted.');
+          alert('Employee has been deactivated.');
           this.$router.push({ name: 'EmployeeList' });
         } catch (error) {
-          console.error('Error deleting employee:', error);
-          alert('Failed to delete employee');
+          console.error('Error deactivating employee:', error);
+          alert('Failed to deactivate employee');
         }
       }
     },

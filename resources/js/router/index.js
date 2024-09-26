@@ -22,7 +22,7 @@ import EmployeeDetails from '../components/EmployeeDetails.vue';
 import Logout from '../components/Logout.vue';
 import DeactivatedEmployees from '../components/DeactivatedEmployees.vue';
 import ScanDocument from '../components/ScanDocument.vue';
-import AutoFillDocument from '../components/AutoFillDocument.vue';
+import AutoFill from '../components/AutoFill.vue';
 
 function isAuthenticated() {
   return !!localStorage.getItem('token');
@@ -50,7 +50,7 @@ const routes = [
       { path: '', component: AdminDashboard },
       { path: 'upload-document', component: UploadDocument },
       { path: 'scan-document', component: ScanDocument },
-      { path: 'autofill-document', component: AutoFillDocument },
+      { path: 'autofill', name: 'Autofill', component: AutoFill, props: true,} ,
       { path: 'search-document', component: SearchDocument },
       { path: 'documents/travel-order', component: DocumentsTravelOrder },
       { path: 'documents/office-order', component: DocumentsOfficeOrder },

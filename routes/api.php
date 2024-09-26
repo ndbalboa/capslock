@@ -6,6 +6,9 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EmployeeProfileController;
+use App\Http\Controllers\ScanController;
+use App\Http\Controllers\DocumentController;
+
 
 // Authentication Routes
 Route::post('/login', [LoginController::class, 'login']);
@@ -26,7 +29,16 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::put('/employees/{id}/reactivate', [EmployeeController::class, 'reactivate']);
     Route::post('/users', [UserController::class, 'store']);
     Route::post('/employees/{id}/restore', [EmployeeController::class, 'restore']);
-    Route::delete('/employees/{id}/force-delete', [EmployeeController::class, 'forceDelete']);
+    Route::delete('/employees/{id}/forceDelete', [EmployeeController::class, 'forceDeleteEmployee']);
+    Route::post('/upload-scanned-document', [ScanController::class, 'upload']);
+    Route::post('/documents', [DocumentController::class, 'saveDocument']);
+    Route::post('/classify', [DocumentController::class, 'classify']);
+    Route::post('/upload', [DocumentController::class, 'upload']);
+    Route::post('/documents', [DocumentController::class, 'store']);
+    Route::post('/documents/store', [DocumentController::class, 'store']);
+    Route::post('/upload', [DocumentController::class, 'store']);
+    Route::post('/documents/save', [DocumentController::class, 'saveDocument']);
+
 
 });
 
