@@ -1,121 +1,240 @@
 <template>
-  <div class="autofill-container">
-    <h2>Autofill Document Data</h2>
+  <div class="document-form">
+    <h2>Document Details</h2>
+    <form @submit.prevent="saveDocument" class="form-container">
+      <div class="form-group">
+        <label>Document No:</label>
+        <input type="text" v-model="document.document_no" />
+      </div>
+      <div class="form-group">
+        <label>Series No:</label>
+        <input type="text" v-model="document.series_no" />
+      </div>
+      <div class="form-group">
+        <label>Date Issued:</label>
+        <input type="date" v-model="document.date_issued" />
+      </div>
+      <div class="form-group">
+        <label>From:</label>
+        <input type="text" v-model="document.from" />
+      </div>
+      <div class="form-group">
+        <label>To:</label>
+        <input type="text" v-model="document.to" />
+      </div>
+      <div class="form-group">
+        <label>Subject:</label>
+        <input type="text" v-model="document.subject" />
+      </div>
+      <div class="form-group">
+        <label>Description:</label>
+        <textarea v-model="document.description"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Document Type:</label>
+        <select v-model="document.document_type">
+          <option>Travel Order</option>
+          <option>Office Order</option>
+          <option>Special Order</option>
+        </select>
+      </div>
 
-    <div v-if="extractedData" class="form-group">
-      <label>Document No:</label>
-      <input v-model="extractedData.document_no" class="input-field" />
+      <!-- Employee Names Section -->
+      <div class="form-group">
+        <label>Employee Names:</label>
+        <transition-group name="fade" tag="div">
+          <div v-for="(employee, index) in document.employee_names" :key="index" class="employee-group">
+            <input type="text" v-model="document.employee_names[index]" />
+            <button type="button" class="btn-remove" @click="removeEmployee(index)">Remove</button>
+          </div>
+        </transition-group>
+        <button type="button" class="btn-add" @click="addEmployee">Add Employee</button>
+      </div>
 
-      <label>Date Issued:</label>
-      <input v-model="extractedData.date_issued" class="input-field" />
+      <button type="submit" class="btn-submit">Save</button>
+    </form>
 
-      <label>From:</label>
-      <input v-model="extractedData.from" class="input-field" />
-
-      <label>To:</label>
-      <input v-model="extractedData.to" class="input-field" />
-
-      <label>Subject:</label>
-      <input v-model="extractedData.subject" class="input-field" />
-
-      <label>Description:</label>
-      <textarea v-model="extractedData.description" class="textarea-field" rows="4"></textarea>
-
-      <label>Document Type:</label>
-      <input v-model="documentType" class="input-field" readonly />
-
-      <button @click="saveDocument" class="save-button">Save Document</button>
-    </div>
+    <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
+    <div v-if="successMessage" class="success">{{ successMessage }}</div>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
-import { onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import axios from "axios";
 
 export default {
   data() {
     return {
-      extractedData: {},
-      documentType: ''
+      document: {
+        document_no: "",
+        series_no: "",
+        date_issued: "",
+        from: "",
+        to: "",
+        subject: "",
+        description: "",
+        document_type: "Travel Order",
+        employee_names: [], // Array to store employee names
+        file_path: "", // For storing the file path returned from the backend
+      },
+      errorMessage: null,
+      successMessage: null,
     };
   },
-  mounted() {
-    const route = useRoute();
-    this.extractedData = JSON.parse(route.query.extractedData || '{}'); // Parse the JSON string
-    this.documentType = route.query.documentType || ''; // Get document type from query
+  created() {
+    // Retrieve the extracted data from localStorage
+    const extractedData = localStorage.getItem("extractedData");
+    if (extractedData) {
+      try {
+        this.document = JSON.parse(extractedData);
+
+        // Format the date if it's present to work with the input type="date"
+        if (this.document.date_issued) {
+          this.document.date_issued = this.formatDate(this.document.date_issued);
+        }
+
+        // Ensure employee names exist as an array
+        if (!Array.isArray(this.document.employee_names)) {
+          this.document.employee_names = [];
+        }
+      } catch (error) {
+        console.error("Error parsing extracted data from localStorage:", error);
+      }
+    }
   },
   methods: {
-    saveDocument() {
-      const payload = {
-        document_no: this.extractedData.document_no,
-        date_issued: this.extractedData.date_issued,
-        from: this.extractedData.from,
-        to: this.extractedData.to,
-        subject: this.extractedData.subject,
-        description: this.extractedData.description,
-        document_type: this.documentType,
-        employee_names: this.extractedData.employee_names,
-      };
+    async saveDocument() {
+      try {
+        this.clearMessages(); // Clear previous messages
 
-      axios.post('/api/admin/documents/save', payload)
-        .then(response => {
-          alert('Document saved successfully.');
-        })
-        .catch(error => {
-          console.error('Error saving document:', error);
-        });
-    }
-  }
+        // Add basic validation here if needed
+        if (!this.document.document_type || !this.document.file_path) {
+          this.errorMessage = "Please ensure all required fields are filled.";
+          return;
+        }
+
+        const response = await axios.post("/api/admin/documents/save", this.document);
+
+        if (response.data) {
+          this.successMessage = "Document saved successfully.";
+          localStorage.removeItem("extractedData"); // Clean up localStorage after saving
+        }
+      } catch (error) {
+        this.errorMessage = error.response?.data?.error || "Failed to save the document.";
+      }
+    },
+    formatDate(dateStr) {
+      // Assuming date is received in a format like 'January 25, 2024'
+      const dateObj = new Date(dateStr);
+      return dateObj.toISOString().split("T")[0]; // Return in YYYY-MM-DD format
+    },
+    clearMessages() {
+      this.errorMessage = null;
+      this.successMessage = null;
+    },
+    addEmployee() {
+      this.document.employee_names.push(""); // Add an empty string to the array
+    },
+    removeEmployee(index) {
+      this.document.employee_names.splice(index, 1); // Remove employee at the specified index
+    },
+  },
 };
 </script>
 
 <style scoped>
-.autofill-container {
-  max-width: 800px;
-  margin: 20px auto;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+/* Form Styling */
+.document-form {
   background-color: #f9f9f9;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  border-radius: 8px;
+  margin-left: 20px;
+  margin-right: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .form-group {
-  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
 }
 
 label {
-  display: block;
   margin-bottom: 5px;
   font-weight: bold;
 }
 
-.input-field,
-.textarea-field {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #f5eeee;
+input[type="text"], textarea, select, input[type="date"] {
+  padding: 10px;
   border-radius: 4px;
-  box-sizing: border-box;
+  border: 1px solid #ccc;
+  font-size: 1rem;
 }
 
-.textarea-field {
-  resize: vertical;
+textarea {
+  resize: none;
+  height: 100px;
 }
 
-.save-button {
-  background-color: #4c86af; 
-  color: white;
-  padding: 10px 15px;
+button {
+  cursor: pointer;
   border: none;
   border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+  padding: 10px;
+  font-size: 1rem;
 }
 
-.save-button:hover {
-  background-color: #45a049;
+.btn-add {
+  background-color: #4caf50;
+  color: white;
+  width: 500px;
+}
+
+.btn-remove {
+  background-color: #f44336;
+  color: white;
+  margin-left: 10px;
+}
+
+.btn-submit {
+  background-color: #007bff;
+  color: white;
+  margin-top: 20px;
+}
+
+.error {
+  color: red;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.success {
+  color: green;
+  margin-top: 10px;
+  text-align: center;
+}
+
+/* Animations */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
+
+.employee-group {
+  display: flex;
+  align-items: center;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <header class="d-flex justify-content-between align-items-center p-3 bg-custom border-bottom-custom">
-    <h1 class="h5 mb-0 text-white">Optimizing Document Categorization</h1>
+    <h1 class="h5 mb-0 text-white">Optimized Document Categorization </h1>
     <div class="clock text-white">{{ currentTime }}</div>
   </header>
 </template>

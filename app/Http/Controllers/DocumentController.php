@@ -5,54 +5,98 @@ namespace App\Http\Controllers;
 use App\Models\Document;
 use App\Models\Employee;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
 class DocumentController extends Controller
 {
-    public function saveDocument(Request $request)
+    public function upload(Request $request)
     {
-        if (!$request->hasFile('file')) {
-            return response()->json(['error' => 'No file uploaded.'], 400);
-        }
-
-        // Store file
-        $file = $request->file('file');
-        $filePath = $file->store('documents', 'public');
-
-        // Get employee names from the request
-        $employeeNames = $request->input('employee_names');
-
-        // Query matching employees
-        $employees = Employee::where(function ($query) use ($employeeNames) {
-            foreach ($employeeNames as $name) {
-                $names = explode(' ', trim($name));
-                if (count($names) > 1) {
-                    $query->orWhere(function ($q) use ($names) {
-                        $q->where('firstName', 'like', '%' . $names[0] . '%')
-                          ->where('lastName', 'like', '%' . $names[1] . '%');
-                    });
-                }
-            }
-        })->get();
-
-        // Create document record
-        $document = Document::create([
-            'document_no' => $request->input('document_no'),
-            'date_issued' => $request->input('date_issued'),
-            'from' => $request->input('from'),
-            'to' => $request->input('to'),
-            'subject' => $request->input('subject'),
-            'description' => $request->input('description'),
-            'document_type' => $request->input('document_type'),
-            'file_path' => $filePath,
+        $request->validate([
+            'file' => 'required|mimes:pdf,jpeg,jpg,png,docx|max:20480',
         ]);
 
-        // Attach employees to the document
-        if ($employees->count() > 0) {
-            $document->employees()->attach($employees);
-        }
+        $file = $request->file('file');
+        $fileName = $file->getClientOriginalName();
+        $filePath = $file->storeAs('documents', $fileName, 'public');
 
-        return response()->json(['message' => 'Document and file saved successfully']);
+        try {
+            $response = Http::timeout(150)
+                ->attach('file', file_get_contents($file->getPathname()), $fileName)
+                ->post('http://localhost:5000/api/admin/upload');
+
+            if ($response->failed()) {
+                $errorMessage = $response->json('error') ?? 'Failed to communicate with Flask API';
+                Storage::delete($filePath);
+                return response()->json(['error' => $errorMessage], 500);
+            }
+
+            $data = $response->json();
+            if (isset($data['error'])) {
+                Storage::delete($filePath);
+                return response()->json(['error' => $data['error']], 400);
+            }
+
+            $extractedFields = $data['extracted_fields'];
+            $extractedFields['file_path'] = $filePath;
+            $extractedFields['document_type'] = $data['document_type'];
+
+            return response()->json([
+                'document' => $extractedFields,
+            ]);
+        } catch (\Exception $e) {
+            Storage::delete($filePath);
+            return response()->json(['error' => 'Failed to process the document: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function save(Request $request)
+    {
+        $validatedData = $request->validate([
+            'document_no' => 'nullable|string',
+            'date_issued' => 'nullable|date',
+            'from' => 'nullable|string',
+            'to' => 'nullable|string',
+            'subject' => 'nullable|string',
+            'description' => 'nullable|string',
+            'document_type' => 'required|string',
+            'file_path' => 'required|string',
+            'employee_names' => 'nullable|array',
+        ]);
+
+        try {
+            $document = Document::updateOrCreate(
+                ['document_no' => $validatedData['document_no']],
+                $validatedData
+            );
+
+            if (!empty($validatedData['employee_names'])) {
+                $this->associateEmployees($document, $validatedData['employee_names']);
+            }
+
+            return response()->json([
+                'message' => 'Document saved successfully.',
+                'document' => $document,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to save the document: ' . $e->getMessage()], 500);
+        }
+    }
+
+    private function associateEmployees($document, $employeeNames)
+    {
+        foreach ($employeeNames as $employeeName) {
+            $names = explode(' ', $employeeName);
+            $firstName = $names[0] ?? null;
+            $lastName = end($names);
+
+            $employee = Employee::firstOrCreate([
+                'firstName' => $firstName,
+                'lastName' => $lastName,
+            ]);
+
+            $document->employees()->syncWithoutDetaching($employee->id);
+        }
     }
 }
-

@@ -22,7 +22,7 @@ class Document extends Model
     ];
     public function employees()
     {
-        return $this->belongsToMany(Employee::class, 'document_employee');
+        return $this->belongsToMany(Employee::class);
     }
 }
 
