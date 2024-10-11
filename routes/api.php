@@ -33,6 +33,7 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::post('/upload-scanned-document', [ScanController::class, 'upload']);
     Route::post('/documents/upload', [DocumentController::class, 'upload']);
     Route::post('/documents/save', [DocumentController::class, 'save']);
+    Route::post('/employees/register-unregistered', [EmployeeController::class, 'registerUnregisteredEmployee']);
 
 
 });

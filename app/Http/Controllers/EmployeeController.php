@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Employee;
+use App\Models\DocumentEmployeeName; // Assuming this is the model for the document_employee_names table
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -105,6 +106,64 @@ class EmployeeController extends Controller
         return response()->json(['message' => 'Employee updated successfully', 'employee' => $employee]);
     }
 
+    /**
+     * Register unregistered employee and associate with document.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function registerUnregisteredEmployee(Request $request)
+    {
+        // Validate the request for unregistered employee information
+        $validatedData = $request->validate([
+            'document_id' => 'required|exists:documents,id',
+            'employee_name' => 'required|string',
+            'gender' => 'nullable|in:male,female',
+            'civil_status' => 'nullable|string',
+            'email' => 'nullable|string|email|unique:employees,emailAddress',
+            'religion' => 'nullable|string|max:255',
+        ]);
+
+        // Extract the name and split into first name and last name
+        $names = explode(' ', $validatedData['employee_name']);
+        $firstName = $names[0] ?? null;
+        $lastName = end($names);
+
+        // Check if the employee already exists
+        $existingEmployee = Employee::where('firstName', $firstName)
+            ->where('lastName', $lastName)
+            ->first();
+
+        if ($existingEmployee) {
+            return response()->json(['error' => 'Employee already exists.'], 400);
+        }
+
+        // Add the new employee to the employees table
+        $newEmployee = Employee::create([
+            'firstName' => $firstName,
+            'lastName' => $lastName,
+            'gender' => $validatedData['gender'],
+            'civilStatus' => $validatedData['civil_status'],
+            'emailAddress' => $validatedData['email'],
+            'religion' => $validatedData['religion'],
+        ]);
+
+        // Remove the unregistered employee from the document_employee_names table
+        DocumentEmployeeName::where('document_id', $validatedData['document_id'])
+            ->where('employee_name', $validatedData['employee_name'])
+            ->delete();
+
+        // Associate the new employee with the document
+        $document = Document::find($validatedData['document_id']);
+        if ($document) {
+            $document->employees()->attach($newEmployee->id);
+        }
+
+        return response()->json([
+            'message' => 'Employee registered and associated with document successfully.',
+            'employee' => $newEmployee,
+        ]);
+    }
 
     /**
      * Get validation rules for employee creation and updating.
@@ -258,32 +317,35 @@ class EmployeeController extends Controller
 
         return response()->json(['message' => 'No image uploaded'], 400);
     }
+
     public function destroy($id)
     {
         $employee = Employee::findOrFail($id);
 
-    // Deactivate the employee
-    $employee->is_active = false;
-    $employee->save();
+        // Deactivate the employee
+        $employee->is_active = false;
+        $employee->save();
 
-    // Also deactivate the associated user account
-    if ($employee->user) {
-        $employee->user->is_active = false;
-        $employee->user->save();
+        // Also deactivate the associated user account
+        if ($employee->user) {
+            $employee->user->is_active = false;
+            $employee->user->save();
+        }
+
+        return response()->json(['message' => 'Employee and associated user account have been deactivated.']);
     }
 
-    return response()->json(['message' => 'Employee and associated user account have been deactivated.']);
-}
-public function getDeactivatedEmployees()
-{
-    // Fetch only soft-deleted employees
-    $deactivatedEmployees = Employee::onlyTrashed()->with('user')->get();
+    public function getDeactivatedEmployees()
+    {
+        // Fetch only soft-deleted employees
+        $deactivatedEmployees = Employee::onlyTrashed()->with('user')->get();
 
-    return response()->json($deactivatedEmployees);
-}
-public function restore($id)
-{
-    $employee = Employee::find($id);
+        return response()->json($deactivatedEmployees);
+    }
+
+    public function restore($id)
+    {
+        $employee = Employee::find($id);
 
         if (!$employee) {
             return response()->json(['message' => 'Employee not found'], 404);
@@ -301,19 +363,21 @@ public function restore($id)
 
         return response()->json(['message' => 'Employee deactivated successfully']);
     }
-public function forceDelete($id)
-{
-    $employee = Employee::withTrashed()->find($id);
 
-    if (!$employee) {
-        return response()->json(['message' => 'Employee not found'], 404);
+    public function forceDelete($id)
+    {
+        $employee = Employee::withTrashed()->find($id);
+
+        if (!$employee) {
+            return response()->json(['message' => 'Employee not found'], 404);
+        }
+
+        $employee->forceDelete();
+
+        return response()->json(['message' => 'Employee permanently deleted successfully']);
     }
 
-    $employee->forceDelete();
-
-    return response()->json(['message' => 'Employee permanently deleted successfully']);
-}
-public function forceDeleteEmployee($id)
+    public function forceDeleteEmployee($id)
     {
         try {
             $employee = Employee::withTrashed()->findOrFail($id);
@@ -324,5 +388,4 @@ public function forceDeleteEmployee($id)
             return response()->json(['error' => 'Failed to permanently delete employee.'], 500);
         }
     }
-
 }

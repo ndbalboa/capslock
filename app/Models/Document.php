@@ -12,17 +12,22 @@ class Document extends Model
     protected $fillable = [
         'document_no',
         'date_issued',
-        'from',
-        'to',
+        'from_date',
+        'to_date',
         'subject',
         'description',
         'employee_names',
         'document_type',
-        'file_path',  // Add this field for the file path
+        'file_path',  
     ];
-    public function employees()
+
+    public function documentEmployeeNames()
     {
-        return $this->belongsToMany(Employee::class);
+        return $this->hasMany(DocumentEmployeeName::class);
+    }
+    public function employees(): BelongsToMany
+    {
+        return $this->belongsToMany(Employee::class, 'document_employee', 'document_id', 'employee_id');
     }
 }
 

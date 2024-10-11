@@ -3,7 +3,15 @@
     <h2>Document Details</h2>
     <form @submit.prevent="saveDocument" class="form-container">
       <div class="form-group">
-        <label>Document No:</label>
+        <label>Document Type:</label>
+        <select v-model="document.document_type">
+          <option>Travel Order</option>
+          <option>Office Order</option>
+          <option>Special Order</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Travel Order Number:</label>
         <input type="text" v-model="document.document_no" />
       </div>
       <div class="form-group">
@@ -16,11 +24,11 @@
       </div>
       <div class="form-group">
         <label>From:</label>
-        <input type="text" v-model="document.from" />
+        <input type="text" v-model="document.from_date" />
       </div>
       <div class="form-group">
         <label>To:</label>
-        <input type="text" v-model="document.to" />
+        <input type="text" v-model="document.to_date" />
       </div>
       <div class="form-group">
         <label>Subject:</label>
@@ -29,14 +37,6 @@
       <div class="form-group">
         <label>Description:</label>
         <textarea v-model="document.description"></textarea>
-      </div>
-      <div class="form-group">
-        <label>Document Type:</label>
-        <select v-model="document.document_type">
-          <option>Travel Order</option>
-          <option>Office Order</option>
-          <option>Special Order</option>
-        </select>
       </div>
 
       <!-- Employee Names Section -->
@@ -225,7 +225,6 @@ button {
   text-align: center;
 }
 
-/* Animations */
 .fade-enter-active, .fade-leave-active {
   transition: opacity 0.5s;
 }
@@ -233,8 +232,13 @@ button {
   opacity: 0;
 }
 
+.employee-group input[type="text"] {
+  width: 400px; /* Adjust the width as needed */
+}
+
 .employee-group {
   display: flex;
   align-items: center;
+  margin-bottom: 10px;
 }
 </style>
