@@ -33,8 +33,16 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::post('/upload-scanned-document', [ScanController::class, 'upload']);
     Route::post('/documents/upload', [DocumentController::class, 'upload']);
     Route::post('/documents/save', [DocumentController::class, 'save']);
-    Route::post('/employees/register-unregistered', [EmployeeController::class, 'registerUnregisteredEmployee']);
-
+    Route::get('/employees/{employee}/documents', [DocumentController::class, 'getDocumentsByEmployee']); 
+    Route::get('employees/{id}/documents', [DocumentController::class, 'getEmployeeDocuments']);
+    Route::get('/documents/employee/{id}', [DocumentController::class, 'getEmployeeDocuments']);
+    Route::get('/documents/type/{type}', [DocumentController::class, 'getDocumentsByType']);
+    Route::get('/documents/{id}', [DocumentController::class, 'getDocumentById']);
+    Route::get('/employees/{id}/documents', [EmployeeController::class, 'getDocuments']);
+    Route::get('/employees/{id}/documents', [DocumentController::class, 'getEmployeeDocuments']);
+    Route::get('/employees/{id}', [EmployeeController::class, 'view']);
+    Route::get('/employees/{id}/documents', [EmployeeController::class, 'documents']);
+    Route::get('/documents/{id}/download', [DocumentController::class, 'download']);
 
 });
 

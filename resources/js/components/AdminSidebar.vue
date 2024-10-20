@@ -39,6 +39,11 @@
                 <i class="bi bi-file-earmark-text me-2"></i> Office Order
               </router-link>
             </li>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/admin-dashboard/documents/special-order">
+                <i class="bi bi-file-earmark-text me-2"></i> Special Order
+              </router-link>
+            </li>
           </ul>
         </transition>
       </li>

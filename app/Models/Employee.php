@@ -49,12 +49,20 @@ class Employee extends Model
     // Specify that deleted_at should be managed by soft deletes
     protected $dates = ['deleted_at']; 
 
+    public function getNameAttribute()
+    {
+        return "{$this->firstName} {$this->lastName}";
+    }
+
     public function user()
     {
         return $this->hasOne(User::class);
     }
+
+    // Relationship with documents, considering that employee_names is stored as JSON
     public function documents()
     {
-        return $this->belongsToMany(Document::class, 'document_employee');
+        // Modify the query if needed, based on how you relate documents and employees
+        return $this->hasMany(Document::class, 'employee_names', 'firstName', 'lastName'); // Change 'firstName' to a suitable column if necessary
     }
 }

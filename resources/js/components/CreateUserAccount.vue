@@ -42,6 +42,7 @@
           <select id="role" v-model="role">
             <option value="user">User</option>
             <option value="admin">Admin</option>
+            <option value="secretary">Secretary</option>
           </select>
         </div>
       </div>

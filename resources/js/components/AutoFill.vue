@@ -8,47 +8,81 @@
           <option>Travel Order</option>
           <option>Office Order</option>
           <option>Special Order</option>
+          <optgroup label="DBM">
+            <option>SARO</option>
+            <option>NCA</option>
+            <option>Budget Circular</option>
+            <option>Advised of NCA Issued</option>
+            <option>Advisory</option>
+            <option>Joint Circular</option>
+            <option>Memorandum Circular</option>
+          </optgroup>
         </select>
       </div>
-      <div class="form-group">
-        <label>Travel Order Number:</label>
-        <input type="text" v-model="document.document_no" />
-      </div>
-      <div class="form-group">
-        <label>Series No:</label>
-        <input type="text" v-model="document.series_no" />
-      </div>
-      <div class="form-group">
-        <label>Date Issued:</label>
-        <input type="date" v-model="document.date_issued" />
-      </div>
-      <div class="form-group">
-        <label>From:</label>
-        <input type="text" v-model="document.from_date" />
-      </div>
-      <div class="form-group">
-        <label>To:</label>
-        <input type="text" v-model="document.to_date" />
-      </div>
-      <div class="form-group">
-        <label>Subject:</label>
-        <input type="text" v-model="document.subject" />
-      </div>
-      <div class="form-group">
-        <label>Description:</label>
-        <textarea v-model="document.description"></textarea>
+
+      <!-- Conditional Rendering for DBM Document Types -->
+      <div v-if="isDBMDocumentType">
+        <div class="form-group">
+          <label>Date Issued:</label>
+          <input type="date" v-model="document.date_issued" />
+        </div>
+        <div class="form-group">
+          <label>Subject:</label>
+          <input type="text" v-model="document.subject" />
+        </div>
+        <div class="form-group">
+          <label>Description:</label>
+          <textarea v-model="document.description"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Tag Employee:</label>
+          <input type="checkbox" v-model="tagEmployee" />
+        </div>
       </div>
 
-      <!-- Employee Names Section -->
-      <div class="form-group">
-        <label>Employee Names:</label>
-        <transition-group name="fade" tag="div">
-          <div v-for="(employee, index) in document.employee_names" :key="index" class="employee-group">
-            <input type="text" v-model="document.employee_names[index]" />
-            <button type="button" class="btn-remove" @click="removeEmployee(index)">Remove</button>
-          </div>
-        </transition-group>
-        <button type="button" class="btn-add" @click="addEmployee">Add Employee</button>
+      <!-- Default Fields for Non-DBM Document Types -->
+      <div v-else>
+        <!-- Document Number Section with Dynamic Label -->
+        <div class="form-group">
+          <label>{{ documentNumberLabel }}:</label>
+          <input type="text" v-model="document.document_no" />
+        </div>
+        <div class="form-group">
+          <label>Series No:</label>
+          <input type="text" v-model="document.series_no" />
+        </div>
+        <div class="form-group">
+          <label>Date Issued:</label>
+          <input type="date" v-model="document.date_issued" />
+        </div>
+        <div class="form-group">
+          <label>From:</label>
+          <input type="text" v-model="document.from_date" />
+        </div>
+        <div class="form-group">
+          <label>To:</label>
+          <input type="text" v-model="document.to_date" />
+        </div>
+        <div class="form-group">
+          <label>Subject:</label>
+          <input type="text" v-model="document.subject" />
+        </div>
+        <div class="form-group">
+          <label>Description:</label>
+          <textarea v-model="document.description"></textarea>
+        </div>
+
+        <!-- Employee Names Section -->
+        <div class="form-group">
+          <label>Employee Names:</label>
+          <transition-group name="fade" tag="div">
+            <div v-for="(employee, index) in document.employee_names" :key="index" class="employee-group">
+              <input type="text" v-model="document.employee_names[index]" />
+              <button type="button" class="btn-remove" @click="removeEmployee(index)">Remove</button>
+            </div>
+          </transition-group>
+          <button type="button" class="btn-add" @click="addEmployee">Add Employee</button>
+        </div>
       </div>
 
       <button type="submit" class="btn-submit">Save</button>
@@ -73,27 +107,25 @@ export default {
         to: "",
         subject: "",
         description: "",
-        document_type: "Travel Order",
+        document_type: "Travel Order", // Default document type
         employee_names: [], // Array to store employee names
         file_path: "", // For storing the file path returned from the backend
       },
+      tagEmployee: false, // Checkbox state for DBM documents
       errorMessage: null,
       successMessage: null,
     };
   },
   created() {
-    // Retrieve the extracted data from localStorage
     const extractedData = localStorage.getItem("extractedData");
     if (extractedData) {
       try {
         this.document = JSON.parse(extractedData);
 
-        // Format the date if it's present to work with the input type="date"
         if (this.document.date_issued) {
           this.document.date_issued = this.formatDate(this.document.date_issued);
         }
 
-        // Ensure employee names exist as an array
         if (!Array.isArray(this.document.employee_names)) {
           this.document.employee_names = [];
         }
@@ -102,12 +134,31 @@ export default {
       }
     }
   },
+  computed: {
+    // Dynamic label for the document number field
+    documentNumberLabel() {
+      switch (this.document.document_type) {
+        case "Travel Order":
+          return "Travel Order Number";
+        case "Office Order":
+          return "Office Order Number";
+        case "Special Order":
+          return "Special Order Number";
+        default:
+          return "Document Number"; // Fallback
+      }
+    },
+    // Check if the selected document type belongs to DBM
+    isDBMDocumentType() {
+      const dbmTypes = ["SARO", "NCA", "Budget Circular", "Advised of NCA Issued", "Advisory", "Joint Circular", "Memorandum Circular"];
+      return dbmTypes.includes(this.document.document_type);
+    },
+  },
   methods: {
     async saveDocument() {
       try {
-        this.clearMessages(); // Clear previous messages
+        this.clearMessages();
 
-        // Add basic validation here if needed
         if (!this.document.document_type || !this.document.file_path) {
           this.errorMessage = "Please ensure all required fields are filled.";
           return;
@@ -117,26 +168,25 @@ export default {
 
         if (response.data) {
           this.successMessage = "Document saved successfully.";
-          localStorage.removeItem("extractedData"); // Clean up localStorage after saving
+          localStorage.removeItem("extractedData");
         }
       } catch (error) {
         this.errorMessage = error.response?.data?.error || "Failed to save the document.";
       }
     },
     formatDate(dateStr) {
-      // Assuming date is received in a format like 'January 25, 2024'
       const dateObj = new Date(dateStr);
-      return dateObj.toISOString().split("T")[0]; // Return in YYYY-MM-DD format
+      return dateObj.toISOString().split("T")[0];
     },
     clearMessages() {
       this.errorMessage = null;
       this.successMessage = null;
     },
     addEmployee() {
-      this.document.employee_names.push(""); // Add an empty string to the array
+      this.document.employee_names.push("");
     },
     removeEmployee(index) {
-      this.document.employee_names.splice(index, 1); // Remove employee at the specified index
+      this.document.employee_names.splice(index, 1);
     },
   },
 };

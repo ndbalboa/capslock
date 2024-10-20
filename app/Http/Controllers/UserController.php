@@ -58,7 +58,7 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email',
             'username' => 'required|string|max:255|unique:users,username',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|string|in:admin,user',
+            'role' => 'required|string|in:admin,user,secretary',
         ]);
 
         $employee = Employee::find($request->employee_id);

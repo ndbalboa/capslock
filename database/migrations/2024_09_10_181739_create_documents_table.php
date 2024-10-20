@@ -11,6 +11,7 @@ class CreateDocumentsTable extends Migration
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
             $table->string('document_no')->nullable();
+            $table->string('series_no')->nullable();
             $table->date('date_issued')->nullable();
             $table->string('from_date')->nullable();
             $table->string('to_date')->nullable();

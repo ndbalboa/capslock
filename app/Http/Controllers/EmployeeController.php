@@ -388,4 +388,38 @@ class EmployeeController extends Controller
             return response()->json(['error' => 'Failed to permanently delete employee.'], 500);
         }
     }
+    public function getDocuments($employeeId)
+    {
+        $documents = Document::where('employee_id', $employeeId)->get();
+        return response()->json($documents);
+    }
+
+     // Fetch details of a specific employee
+     public function view($id)
+     {
+         $employee = Employee::findOrFail($id);
+         return response()->json(['employee' => $employee]);
+     }
+ 
+     // Fetch all documents associated with the employee
+     public function documents($id)
+    {
+        $employee = Employee::findOrFail($id);
+        
+        // Normalize the employee's full name to lowercase
+        $employeeName = strtolower($employee->firstName . ' ' . $employee->lastName);
+
+        // Fetch documents where the employee name is stored in the employee_names JSON field
+        $documents = Document::where(function ($query) use ($employeeName) {
+            // Use JSON_CONTAINS with a case-insensitive comparison
+            $query->whereJsonContains('employee_names', $employeeName)
+                ->orWhere(function ($query) use ($employeeName) {
+                    // Add a fallback to handle possible capital letters
+                    $query->whereRaw('LOWER(employee_names) LIKE ?', "%{$employeeName}%");
+                });
+        })->get();
+
+        return response()->json(['documents' => $documents]);
+    }
+
 }

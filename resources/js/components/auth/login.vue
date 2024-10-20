@@ -61,6 +61,8 @@ export default {
 
         if (role === 'admin') {
           this.$router.push('/admin-dashboard');
+        } else if (role === 'secretary') {
+          this.$router.push('/secretary-dashboard');
         } else {
           this.$router.push('/user-dashboard');
         }

@@ -10,15 +10,20 @@ class Document extends Model
     use HasFactory;
 
     protected $fillable = [
-        'document_no',
-        'date_issued',
-        'from_date',
-        'to_date',
-        'subject',
-        'description',
-        'employee_names',
-        'document_type',
-        'file_path',  
+        'document_no', 
+        'series_no',
+        'date_issued', 
+        'from_date', 
+        'to_date', 
+        'subject', 
+        'description', 
+        'document_type', 
+        'file_path', 
+        'employee_names' 
+    ];
+
+    protected $casts = [
+        'employee_names' => 'array',
     ];
 
     public function documentEmployeeNames()

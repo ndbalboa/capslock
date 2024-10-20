@@ -27,6 +27,18 @@ class UserSeeder extends Seeder
                 'employee_id' => null,
             ],
             [
+                'username'=> 'secretary',
+                'lastName' => 'Balboa',
+                'firstName' => 'Nino',
+                'email' => 'secretary@gmail.com',
+                'password' => Hash::make('password'),
+                'role' => 'secretary',
+                'status' => 'active',
+                'created_at' => now(),
+                'updated_at' => now(),
+                'employee_id' => null,
+            ],
+            [
                 'username' => 'user1',
                 'lastName' => 'Ann',
                 'firstName' => 'Curtis',

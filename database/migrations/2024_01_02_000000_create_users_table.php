@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
-            $table->enum('role', ['user', 'admin'])->default('user');
+            $table->enum('role', ['user', 'admin', 'secretary'])->default('user');
             $table->enum('status', ['active', 'inactive'])->default('active');
 
             $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');
