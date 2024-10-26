@@ -11,7 +11,7 @@
   </template>
   
   <script>
-  import Header from './Header.vue';
+  import Header from '../Header.vue';
   import AdminSidebar from './AdminSidebar.vue';
   
   export default {

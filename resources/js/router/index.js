@@ -1,32 +1,37 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 import login from '../components/auth/login.vue';
-import AdminLayout from '../components/AdminLayout.vue';
-import SecretaryLayout from '../components/SecretaryLayout.vue'; // For Secretary role
-import UserLayout from '../components/UserLayout.vue';
-import AdminDashboard from '../components/AdminDashboard.vue';
-import SecretaryDashboard from '../components/SecretaryDashboard.vue'; // Secretary dashboard
-import UserDashboard from '../components/UserDashboard.vue';
-import UploadDocument from '../components/UploadDocument.vue';
-import SearchDocument from '../components/SearchDocument.vue';
-import DocumentsTravelOrder from '../components/DocumentsTravelOrder.vue';
-import DocumentsOfficeOrder from '../components/DocumentsOfficeOrder.vue';
-import DocumentsSpecialOrder from '../components/DocumentsSpecialOrder.vue';
-import AddNewEmployee from '../components/AddNewEmployee.vue';
-import ListOfEmployee from '../components/ListOfEmployee.vue';
-import Mail from '../components/Mail.vue';
+import AdminLayout from '../components/admin/AdminLayout.vue';
+import SecretaryLayout from '../components/secretary/SecretaryLayout.vue'; 
+import UserLayout from '../components/user/UserLayout.vue';
+import AdminDashboard from '../components/admin/AdminDashboard.vue';
+import SecretaryDashboard from '../components/secretary/SecretaryDashboard.vue'; 
+import UserDashboard from '../components/user/UserDashboard.vue';
+import UploadDocument from '../components/admin/UploadDocument.vue';
+import SearchDocument from '../components/admin/SearchDocument.vue';
+import UserSearchDocument from '../components/user/UserSearchDocument.vue';
+import DocumentsTravelOrder from '../components/admin/DocumentsTravelOrder.vue';
+import DocumentsOfficeOrder from '../components/admin/DocumentsOfficeOrder.vue';
+import DocumentsSpecialOrder from '../components/admin/DocumentsSpecialOrder.vue';
+import AddNewEmployee from '../components/admin/AddNewEmployee.vue';
+import ListOfEmployee from '../components/admin/ListOfEmployee.vue';
+import Mail from '../components/admin/Mail.vue';
 import Settings from '../components/Settings.vue';
-import UserProfile from '../components/UserProfile.vue';
-import CreateUserAccount from '../components/CreateUserAccount.vue';
-import EmployeeInformation from '../components/EmployeeInformation.vue';
-import EmployeeDocuments from '../components/EmployeeDocuments.vue';
-import ChangeCredentials from '../components/ChangeCredentials.vue';
-import EmployeeDetails from '../components/EmployeeDetails.vue';
+import UserProfile from '../components/user/UserProfile.vue';
+import CreateUserAccount from '../components/admin/CreateUserAccount.vue';
+import EmployeeInformation from '../components/admin/EmployeeInformation.vue';
+import EmployeeDocuments from '../components/admin/EmployeeDocuments.vue';
+import ChangeCredentials from '../components/user/ChangeCredentials.vue';
+import EmployeeDetails from '../components/admin/EmployeeDetails.vue';
 import Logout from '../components/Logout.vue';
-import DeactivatedEmployees from '../components/DeactivatedEmployees.vue';
-import ScanDocument from '../components/ScanDocument.vue';
-import AutoFill from '../components/AutoFill.vue';
-import DocumentDetails from '../components/DocumentDetails.vue';
+import DeactivatedEmployees from '../components/admin/DeactivatedEmployees.vue';
+import ScanDocument from '../components/admin/ScanDocument.vue';
+import AutoFill from '../components/admin/AutoFill.vue';
+import DocumentDetails from '../components/admin/DocumentDetails.vue';
+import UserTravelOrder from '../components/user/UserTravelOrder.vue';
+import UserOfficeOrder from '../components/user/UserOfficeOrder.vue';
+import UserSpecialOrder from '../components/user/UserSpecialOrder.vue';
+import UserDocumentDetails from '../components/user/UserDocumentDetails.vue';
 
 function isAuthenticated() {
   return !!localStorage.getItem('token');
@@ -59,14 +64,14 @@ const routes = [
       { path: 'documents/travel-order', component: DocumentsTravelOrder },
       { path: 'documents/office-order', component: DocumentsOfficeOrder },
       { path: 'documents/special-order', component: DocumentsSpecialOrder },
-      { path: 'documents/:id', name: 'DocumentDetails', component: DocumentDetails, props: true },
+      { path: 'documents/:id', name: 'DocumentDetails', component: DocumentDetails},
       { path: 'employee/add', component: AddNewEmployee },
       { path: 'employee/list', component: ListOfEmployee },
       { path: 'employee/deactivated', component: DeactivatedEmployees },
       { path: 'employee/:id', name: 'EmployeeInformation', component: EmployeeInformation },
       { path: 'createuser', component: CreateUserAccount },
-      { path: '/admin/employee/:id', name: 'EmployeeDetails', component: EmployeeDetails },
-      { path: '/employees/:id/documents', name: 'EmployeeDocuments', component: EmployeeDocuments, props: true },
+      { path: 'admin/employee/:id', name: 'EmployeeDetails', component: EmployeeDetails },
+      { path: 'employees/:id/documents', name: 'EmployeeDocuments', component: EmployeeDocuments, props: true },
       { path: 'mail', component: Mail },
       { path: 'settings', component: Settings },
       { path: 'logout', component: Logout },
@@ -85,11 +90,6 @@ const routes = [
     },
     children: [
       { path: '', component: SecretaryDashboard },
-      { path: 'upload-document', component: UploadDocument },
-      { path: 'search-document', component: SearchDocument },
-      { path: 'documents/travel-order', component: DocumentsTravelOrder },
-      { path: 'documents/office-order', component: DocumentsOfficeOrder },
-      { path: 'documents/:id', name: 'DocumentDetails', component: DocumentDetails, props: true },
       { path: 'mail', component: Mail },
       { path: 'settings', component: Settings },
       { path: 'logout', component: Logout },
@@ -108,9 +108,11 @@ const routes = [
     },
     children: [
       { path: '', component: UserDashboard },
-      { path: 'search-document', component: SearchDocument },
-      { path: 'documents/travel-order', component: DocumentsTravelOrder },
-      { path: 'documents/office-order', component: DocumentsOfficeOrder },
+      { path: 'search-document', component: UserSearchDocument },
+      { path: 'documents/:id', name: 'UserDocumentDetails', component: UserDocumentDetails},
+      { path: 'documents/travel-order', component: UserTravelOrder },
+      { path: 'documents/office-order', component: UserOfficeOrder },
+      { path: 'documents/special-order', component: UserSpecialOrder },
       { path: 'user-profile', component: UserProfile }, // User profile view and edit
       { path: 'mail', component: Mail },
       { path: 'settings', component: Settings },

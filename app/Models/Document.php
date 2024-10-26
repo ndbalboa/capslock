@@ -34,5 +34,27 @@ class Document extends Model
     {
         return $this->belongsToMany(Employee::class, 'document_employee', 'document_id', 'employee_id');
     }
+    public static function forUser($user, $type = null)
+    {
+        $fullName = $user->firstName . ' ' . $user->lastName;
+
+        $query = self::whereJsonContains('employee_names', $fullName);
+        
+        if ($type) {
+            $query->where('document_type', $type);
+        }
+
+        return $query->get();
+    }
+    public static function byType($type)
+    {
+        return self::where('document_type', $type)->get();
+    }
+    public function scopeForUser($query, $user)
+    {
+        return $query->whereJsonContains('employee_names', $user->employee_id); // Adjust based on how employee_names is structured
+    }
+
+    
 }
 

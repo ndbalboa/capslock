@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Employee;
-use App\Models\DocumentEmployeeName; // Assuming this is the model for the document_employee_names table
+use App\Models\Document;
+use App\Models\User;
+use App\Models\DocumentEmployeeName; 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -421,5 +423,20 @@ class EmployeeController extends Controller
 
         return response()->json(['documents' => $documents]);
     }
+
+    public function getEmployeeDocuments()
+    {
+        // Get the authenticated user
+        $user = auth()->user();
+
+        // Combine first name and last name as they are stored in employee_names
+        $fullName = $user->firstName . ' ' . $user->lastName;
+
+        // Query documents where the employee_names field contains the full name
+        $documents = Document::whereJsonContains('employee_names', $fullName)->get();
+
+        return response()->json($documents);
+    }
+
 
 }

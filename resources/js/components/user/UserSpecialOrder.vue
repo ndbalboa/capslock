@@ -1,6 +1,6 @@
 <template>
   <div class="document-container">
-    <h2>Office Orders</h2>
+    <h2>Special Order</h2>
 
     <!-- Search Bar -->
     <div class="search-bar-container">
@@ -22,8 +22,18 @@
       <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
     </div>
 
+    <!-- Loading Indicator -->
+    <div v-if="isLoading" class="loading-indicator">
+      Loading documents...
+    </div>
+
+    <!-- Error Message -->
+    <div v-if="error" class="error-message">
+      {{ error }}
+    </div>
+
     <!-- Table -->
-    <table class="document-table">
+    <table v-if="!isLoading && !error && paginatedDocuments.length" class="document-table">
       <thead>
         <tr>
           <th>Document No</th>
@@ -48,10 +58,15 @@
           <td>{{ document.subject }}</td>
           <td>{{ document.description }}</td>
           <td>{{ document.date_issued }}</td>
-          <td>{{ document.employee_names ? document.employee_names.join(', ') : 'N/A' }}</td>
+          <td>{{ document.employee_names.join(', ') }}</td>
         </tr>
       </tbody>
     </table>
+
+    <!-- No Results Message -->
+    <div v-if="!isLoading && !paginatedDocuments.length" class="no-results">
+      No documents found.
+    </div>
   </div>
 </template>
 
@@ -65,6 +80,8 @@ export default {
       searchQuery: '',
       currentPage: 1,
       perPage: 5, // Items per page
+      isLoading: false,
+      error: null,
     };
   },
   computed: {
@@ -90,11 +107,16 @@ export default {
   },
   methods: {
     async fetchDocuments() {
+      this.isLoading = true;
+      this.error = null;
       try {
-        const response = await axios.get('/api/admin/documents/type/Office Order');
+        const response = await axios.get('/api/user/documents/special order');
         this.documents = response.data;
       } catch (error) {
-        console.error('Error fetching travel orders:', error);
+        console.error('Error fetching documents:', error);
+        this.error = 'Failed to load documents. Please try again later.';
+      } finally {
+        this.isLoading = false;
       }
     },
     nextPage() {
@@ -108,8 +130,7 @@ export default {
       }
     },
     goToDocumentDetails(documentId) {
-      // Use the router to navigate to the document details page
-      this.$router.push({ name: 'DocumentDetails', params: { id: documentId } });
+      this.$router.push({ name: 'UserDocumentDetails', params: { id: documentId } });
     },
   },
   mounted() {
@@ -125,7 +146,6 @@ export default {
   background-color: #f9f9f9;
   border-radius: 5px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  animation: fadeIn 0.5s ease-in;
 }
 
 h2 {
@@ -143,7 +163,8 @@ h2 {
 
 .search-bar-wrapper {
   position: relative;
-  width: 300px;
+  width: 100%;
+  max-width: 300px;
 }
 
 .search-icon {
@@ -203,7 +224,6 @@ h2 {
 .document-table {
   width: 100%;
   border-collapse: collapse;
-  animation: tableFade 0.8s ease-in-out;
 }
 
 .document-table th,
@@ -223,23 +243,21 @@ h2 {
   transition: background-color 0.3s ease;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+.loading-indicator {
+  text-align: center;
+  margin: 20px;
+  color: #007bff;
 }
 
-@keyframes tableFade {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.error-message {
+  color: red;
+  text-align: center;
+  margin: 20px;
+}
+
+.no-results {
+  text-align: center;
+  margin: 20px;
+  color: #555;
 }
 </style>

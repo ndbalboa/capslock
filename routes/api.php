@@ -43,6 +43,11 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::get('/employees/{id}', [EmployeeController::class, 'view']);
     Route::get('/employees/{id}/documents', [EmployeeController::class, 'documents']);
     Route::get('/documents/{id}/download', [DocumentController::class, 'download']);
+    Route::post('/search', [DocumentController::class, 'search']);
+    Route::post('/advanced-search', [DocumentController::class, 'advancedSearch']);
+    Route::get('/documents/counts', [DocumentController::class, 'getDocumentCounts']);
+    
+
 
 });
 
@@ -50,11 +55,17 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/employee-profile', [EmployeeProfileController::class, 'show']);
     Route::post('/employee-profile', [EmployeeProfileController::class, 'update']);
+    Route::get('/user/documents', [DocumentController::class, 'getUserDocuments']);
     Route::get('/user/profile', [UserController::class, 'fetchUserProfile']);
     Route::put('/user/profile', [UserController::class, 'updateUserProfile']);
     Route::post('/user/upload-image', [UserController::class, 'uploadImage']);
     Route::put('/user/current-username', [UserController::class, 'changeCredentials']);//////
     Route::put('/user/change-credentials', [UserController::class, 'changeCredentials']);
+    Route::get('/user/{userId}/documents', [DocumentController::class, 'getDocumentsForUser']);
+    Route::get('/documents', [DocumentController::class, 'getAllDocuments']);
+    Route::post('/user/search', [DocumentController::class, 'userSearch']);
+    Route::post('/user/advanced-search', [DocumentController::class, 'userAdvancedSearch']); 
+    Route::get('/user/documents/{type?}', [DocumentController::class, 'getUserDocumentsByType']);
 });
 
 // Ensure there are no conflicts or redundancy

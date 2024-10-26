@@ -1,6 +1,6 @@
 <template>
   <div class="document-container">
-    <h2>Travel Orders</h2>
+    <h2>Office Orders</h2>
 
     <!-- Search Bar -->
     <div class="search-bar-container">
@@ -91,7 +91,7 @@ export default {
   methods: {
     async fetchDocuments() {
       try {
-        const response = await axios.get('/api/admin/documents/type/Travel Order');
+        const response = await axios.get('/api/admin/documents/type/Office Order');
         this.documents = response.data;
       } catch (error) {
         console.error('Error fetching travel orders:', error);

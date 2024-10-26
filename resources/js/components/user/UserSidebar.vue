@@ -25,6 +25,11 @@
               </router-link>
             </li>
             <li class="nav-item">
+              <router-link class="nav-link" to="/user-dashboard/documents/special-order">
+                <i class="bi bi-file-earmark-text me-2"></i> Special Order
+              </router-link>
+            </li>
+            <li class="nav-item">
               <router-link class="nav-link" to="/user-dashboard/documents/office-order">
                 <i class="bi bi-file-earmark-text me-2"></i> Office Order
               </router-link>

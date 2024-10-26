@@ -282,7 +282,3 @@ h2 {
   width: 130px; /* Set width for inputs */
 }
 </style>
-
-
-
-

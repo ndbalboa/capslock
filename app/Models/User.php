@@ -55,4 +55,18 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Employee::class, 'employee_id');
     }
+    public function document()
+    {
+        $fullName = $this->firstName . ' ' . $this->lastName;
+        return Document::whereJsonContains('employee_names', $fullName)->get();
+    }
+    public function documents($type = null)
+    {
+        return Document::forUser($this, $type);
+    }
+    public function userDocuments()
+    {
+        $user = Auth::user();
+        return $this->documents()->where('employee_id', $user->employee_id); // Limit documents to the logged-in user
+    }
 }
