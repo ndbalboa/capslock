@@ -5,9 +5,14 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 import { createApp } from 'vue';
-import App from './components/app.vue'; 
+import axios from 'axios';
+import App from './components/app.vue';
 import router from './router';
 
-createApp(App)
-  .use(router) 
-  .mount('#app'); 
+const app = createApp(App);
+
+// Make axios globally accessible
+app.config.globalProperties.$axios = axios;
+
+// Use the router and mount the app
+app.use(router).mount('#app');

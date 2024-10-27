@@ -42,7 +42,7 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::get('/employees/{id}/documents', [DocumentController::class, 'getEmployeeDocuments']);
     Route::get('/employees/{id}', [EmployeeController::class, 'view']);
     Route::get('/employees/{id}/documents', [EmployeeController::class, 'documents']);
-    Route::get('/documents/{id}/download', [DocumentController::class, 'download']);
+    Route::get('/documents/download/{id}', [DocumentController::class, 'download']);
     Route::post('/search', [DocumentController::class, 'search']);
     Route::post('/advanced-search', [DocumentController::class, 'advancedSearch']);
     Route::get('/documents/counts', [DocumentController::class, 'getDocumentCounts']);

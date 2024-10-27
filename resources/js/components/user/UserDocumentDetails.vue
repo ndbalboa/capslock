@@ -2,6 +2,7 @@
   <h2>{{ document ? document.document_type : 'Travel Order' }}</h2>
   <div v-if="document" class="action-buttons">
     <button @click="viewFile" v-if="document.file_path" class="btn-primary">View File</button>
+    <button @click="downloadFile" v-if="document.file_path" class="btn-secondary">Download File</button>
     <button @click="deleteDocument" class="btn-danger">Delete Document</button>
   </div>
   <div class="document-details-container">
@@ -63,7 +64,6 @@
   </div>
 </template>
 
-
 <script>
 import axios from 'axios';
 
@@ -72,7 +72,7 @@ export default {
     return {
       document: null,
       error: null,
-      appUrl: import.meta.env.VITE_APP_URL, // Accessing the VITE_APP_URL
+      appUrl: 'http://127.0.0.1:8000', // Set APP_URL directly here
     };
   },
   computed: {
@@ -93,9 +93,9 @@ export default {
 
       try {
         const response = await axios.get(`/api/admin/documents/${documentId}`);
-        this.document = response.data; // Assign response data to document
+        this.document = response.data;
         this.$nextTick(() => {
-          this.autoResizeTextareas(); // Resize textareas after data is loaded
+          this.autoResizeTextareas();
         });
       } catch (error) {
         console.error('Error fetching document details:', error);
@@ -110,21 +110,45 @@ export default {
     formatDate(date) {
       if (!date) return '';
       const d = new Date(date);
-      const month = (d.getMonth() + 1).toString().padStart(1, '0');
+      const month = (d.getMonth() + 1).toString().padStart(2, '0');
       const day = d.getDate().toString().padStart(2, '0');
       const year = d.getFullYear();
-      return `${month}-${day}-${year}`; // Format: M-DD-YYYY
+      return `${month}-${day}-${year}`;
+    },
+    getFileUrl(filePath) {
+      if (!filePath) {
+        console.error('File path is undefined');
+        return '';
+      }
+      return `${this.appUrl}/storage/${filePath}`;
     },
     viewFile() {
       const fileUrl = this.getFileUrl(this.document.file_path);
-      window.open(fileUrl, '_blank');
+      if (fileUrl) {
+        window.open(fileUrl, '_blank');
+      } else {
+        console.error('Cannot view file: URL is undefined');
+      }
+    },
+    downloadFile() {
+      const fileUrl = this.getFileUrl(this.document.file_path);
+      if (fileUrl) {
+        const link = document.createElement('a');
+        link.href = fileUrl;
+        link.download = this.document.file_path.split('/').pop(); // Set the filename based on file path
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        console.error('Cannot download file: URL is undefined');
+      }
     },
     async deleteDocument() {
       if (confirm('Are you sure you want to delete this document?')) {
         try {
           await axios.delete(`/api/admin/documents/${this.document.id}`);
           alert('Document deleted successfully.');
-          this.$router.push('/documents'); // Redirect after deletion
+          this.$router.push('/documents');
         } catch (error) {
           console.error('Error deleting document:', error);
           alert('Failed to delete document. Please try again later.');
@@ -132,40 +156,35 @@ export default {
       }
     },
     goBack() {
-      this.$router.go(-1); // Navigate back to the previous page
-    },
-    getFileUrl(filePath) {
-      return `${this.appUrl}/${filePath}`;
+      this.$router.go(-1);
     },
     autoResizeTextareas() {
-      const textareas = this.$el.querySelectorAll('textarea');
-      textareas.forEach(textarea => {
-        textarea.style.height = 'auto'; // Reset height to auto to calculate new height
-        textarea.style.height = `${textarea.scrollHeight}px`; // Set to scrollHeight
+      this.$nextTick(() => {
+        const textareas = this.$refs.textareas || [];
+        textareas.forEach(textarea => {
+          textarea.style.height = 'auto'; // Reset height
+          textarea.style.height = `${textarea.scrollHeight}px`; // Set to scrollHeight
+        });
       });
     },
     resizeTextarea(event) {
-      const textarea = event.target; // Get the textarea that triggered the event
-      textarea.style.height = 'auto'; // Reset height to auto to calculate new height
-      textarea.style.height = `${textarea.scrollHeight}px`; // Set to scrollHeight
+      const textarea = event.target;
+      textarea.style.height = 'auto';
+      textarea.style.height = `${textarea.scrollHeight}px`;
     },
   },
   mounted() {
-    this.fetchDocumentDetails(); // Fetch document details when the component mounts
+    this.fetchDocumentDetails();
   },
   watch: {
-    document: {
-      handler() {
-        this.$nextTick(() => {
-          this.autoResizeTextareas(); // Resize textareas when document changes
-        });
-      },
-      deep: true,
+    document() {
+      this.$nextTick(() => {
+        this.autoResizeTextareas();
+      });
     },
   },
 };
 </script>
-
 
 <style scoped>
 .document-details-container {
@@ -211,7 +230,7 @@ h2 {
   border-radius: 5px;
   border: 1px solid #ccc;
   background-color: #f9f9f9;
-  resize: true; 
+  resize: none; 
 }
 
 .details-grid textarea {
@@ -266,19 +285,19 @@ h2 {
 }
 
 .inclusive-date {
-  grid-column: span 2; /* Keeps the Inclusive Date span across two columns */
+  grid-column: span 2;
   display: flex;
-  align-items: center; /* Aligns items vertically centered */
-  gap: 120px; /* Adds space between elements */
+  align-items: center;
+  gap: 120px; 
 }
 
 .inclusive-date .date-range {
-  display: flex; /* Stays in a row */
-  align-items: center; /* Aligns inputs vertically centered */
-  gap: 5px; /* Space between the from/to input and the label */
+  display: flex; 
+  align-items: center; 
+  gap: 5px; 
 }
 
 .inclusive-date input {
-  width: 130px; /* Set width for inputs */
+  width: 130px;
 }
 </style>

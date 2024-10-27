@@ -7,23 +7,28 @@
         </router-link>
       </li>
       <li class="nav-item">
-        <router-link class="nav-link" to="/secretary-dashboard/search-document">
-          <i class="bi bi-search me-2"></i> Search Document
+        <router-link class="nav-link" to="/secretary-dashboard/scan-document">
+          <i class="bi bi-printer me-2"></i> Scan Document
         </router-link>
       </li>
       <li class="nav-item">
         <router-link class="nav-link" to="/secretary-dashboard/upload-document">
-          <i class="bi bi-search me-2"></i> Upload Document
+          <i class="bi bi-upload me-2"></i> Upload Document
         </router-link>
       </li>
-      <li class="nav-item" @click.prevent="toggleSubMenu('documents')">
-        <a class="nav-link d-flex align-items-center" :aria-expanded="isSubMenuOpen.documents">
+      <li class="nav-item">
+        <router-link class="nav-link" to="/secretary-dashboard/search-document">
+          <i class="bi bi-search me-2"></i> Search Document
+        </router-link>
+      </li>
+      <li class="nav-item" @click.prevent="toggleDocumentsSubMenu">
+        <a class="nav-link d-flex align-items-center">
           <i class="bi bi-folder2-open me-2"></i>
           <span>Documents</span>
-          <i :class="['bi', isSubMenuOpen.documents ? 'bi-caret-down-fill' : 'bi-caret-left-fill', 'ms-auto']"></i>
+          <i :class="['bi', isDocumentsSubMenuOpen ? 'bi-caret-down-fill' : 'bi-caret-left-fill', 'ms-auto']"></i>
         </a>
         <transition name="slide-fade">
-          <ul v-show="isSubMenuOpen.documents" class="nav flex-column ms-3 submenu">
+          <ul v-show="isDocumentsSubMenuOpen" class="nav flex-column ms-3 submenu">
             <li class="nav-item">
               <router-link class="nav-link" to="/secretary-dashboard/documents/travel-order">
                 <i class="bi bi-file-earmark-text me-2"></i> Travel Order
@@ -34,30 +39,71 @@
                 <i class="bi bi-file-earmark-text me-2"></i> Office Order
               </router-link>
             </li>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/secretary-dashboard/documents/special-order">
+                <i class="bi bi-file-earmark-text me-2"></i> Special Order
+              </router-link>
+            </li>
           </ul>
         </transition>
       </li>
-      <li class="nav-item">
-        <router-link class="nav-link" to="/secretary-dashboard/user-profile">
-          <i class="bi bi-person-fill me-2"></i> User Profile
-        </router-link>
+      <li class="nav-item" @click.prevent="toggleEmployeesSubMenu">
+        <a class="nav-link d-flex align-items-center">
+          <i class="bi bi-people-fill me-2"></i>
+          <span>Employees</span>
+          <i :class="['bi', isEmployeesSubMenuOpen ? 'bi-caret-down-fill' : 'bi-caret-left-fill', 'ms-auto']"></i>
+        </a>
+        <transition name="slide-fade">
+          <ul v-show="isEmployeesSubMenuOpen" class="nav flex-column ms-3 submenu">
+            <li class="nav-item">
+              <router-link class="nav-link" to="/secretary-dashboard/employee/add">
+                <i class="bi bi-person-plus-fill me-2"></i> Add New Employee
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/secretary-dashboard/employee/list">
+                <i class="bi bi-list-ul me-2"></i> List of Employees
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/secretary-dashboard/employee/deactivated">
+                <i class="bi bi-person-dash-fill me-2"></i> Deactivated Employees
+              </router-link>
+            </li>
+          </ul>
+        </transition>
       </li>
       <li class="nav-item">
         <router-link class="nav-link" to="/secretary-dashboard/mail">
           <i class="bi bi-envelope-fill me-2"></i> Mail
         </router-link>
       </li>
-      <li class="nav-item" @click.prevent="toggleSubMenu('settings')">
-        <a class="nav-link d-flex align-items-center" :aria-expanded="isSubMenuOpen.settings">
+      <li class="nav-item" @click.prevent="toggleSettingsSubMenu">
+        <a class="nav-link d-flex align-items-center">
           <i class="bi bi-gear-fill me-2"></i>
-          <span>Settings</span>
-          <i :class="['bi', isSubMenuOpen.settings ? 'bi-caret-down-fill' : 'bi-caret-left-fill', 'ms-auto']"></i>
+          <span>System Settings</span>
+          <i :class="['bi', isSettingsSubMenuOpen ? 'bi-caret-down-fill' : 'bi-caret-left-fill', 'ms-auto']"></i>
         </a>
         <transition name="slide-fade">
-          <ul v-show="isSubMenuOpen.settings" class="nav flex-column ms-3 submenu">
+          <ul v-show="isSettingsSubMenuOpen" class="nav flex-column ms-3 submenu">
             <li class="nav-item">
-              <router-link class="nav-link" to="/secretary-dashboard/settings/change-credentials">
-                Change Credentials
+              <router-link class="nav-link" to="">
+                Document Types
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link" to="">
+                University Position
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link" to="">
+                Academic Rank
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link" to="">
+                Settings
               </router-link>
             </li>
           </ul>
@@ -74,18 +120,23 @@
 
 <script>
 export default {
-  name: 'SecretarySideBar',
+  name: 'SecretarySidebar',
   data() {
     return {
-      isSubMenuOpen: {
-        documents: false,
-        settings: false,
-      },
+      isDocumentsSubMenuOpen: false,
+      isEmployeesSubMenuOpen: false,
+      isSettingsSubMenuOpen: false,
     };
   },
   methods: {
-    toggleSubMenu(menu) {
-      this.isSubMenuOpen[menu] = !this.isSubMenuOpen[menu];
+    toggleDocumentsSubMenu() {
+      this.isDocumentsSubMenuOpen = !this.isDocumentsSubMenuOpen;
+    },
+    toggleEmployeesSubMenu() {
+      this.isEmployeesSubMenuOpen = !this.isEmployeesSubMenuOpen;
+    },
+    toggleSettingsSubMenu() {
+      this.isSettingsSubMenuOpen = !this.isSettingsSubMenuOpen;
     },
   },
 };

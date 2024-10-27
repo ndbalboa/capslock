@@ -186,8 +186,19 @@ class DocumentController extends Controller
     }
     public function download($id)
     {
-        $document = Document::findOrFail($id);
-        return Storage::download($document->file_path);
+        try {
+            $document = Document::findOrFail($id);
+
+            // Ensure the file exists before downloading
+            if (!Storage::exists($document->file_path)) {
+                return response()->json(['error' => 'File not found.'], 404);
+            }
+
+            // Return the file for download
+            return Storage::download($document->file_path);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'An error occurred while downloading the file.'], 500);
+        }
     }
     public function getUserDocuments(Request $request)
     {
@@ -308,7 +319,6 @@ class DocumentController extends Controller
         $documents = Document::all();
         return response()->json($documents);
     }
-// for User search tab
  // For the user to search their own documents
  public function userSearch(Request $request)
  {

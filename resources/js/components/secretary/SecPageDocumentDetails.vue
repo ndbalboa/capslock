@@ -135,7 +135,7 @@ export default {
       if (fileUrl) {
         const link = document.createElement('a');
         link.href = fileUrl;
-        link.download = this.document.file_path.split('/').pop(); // Set the filename based on file path
+        link.download = this.document.file_path.split('/').pop(); 
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
