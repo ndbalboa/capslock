@@ -18,7 +18,9 @@
           </div>
           <input type="password" class="form-control" placeholder="Password" v-model="password" required>
         </div>
-        <button type="submit" class="btn btn-primary btn-block">Log In</button>
+        <div class="text-center"> <!-- Center the button -->
+          <button type="submit" class="btn btn-primary btn-block mt-3">Log In</button>
+        </div>
         <div v-if="errorMessage" class="alert alert-danger mt-3">
           {{ errorMessage }}
         </div>
@@ -30,7 +32,7 @@
 <script>
 import axios from 'axios';
 
-axios.defaults.withCredentials = true; // Ensure credentials (like cookies) are sent with requests
+axios.defaults.withCredentials = true;
 
 export default {
   name: 'login',
@@ -52,11 +54,9 @@ export default {
         const token = response.data.access_token;
         const role = response.data.role;
 
-        // Store the token and user info in localStorage
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify({ role }));
 
-        // Set the authorization header for future requests
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
         if (role === 'admin') {
@@ -68,13 +68,10 @@ export default {
         }
       } catch (error) {
         if (error.response) {
-          // Server responded with a status other than 2xx
           this.errorMessage = error.response.data.message || 'An error occurred. Please try again.';
         } else if (error.request) {
-          // Request was made but no response received
           this.errorMessage = 'No response from server. Please check your connection.';
         } else {
-          // Something happened in setting up the request
           this.errorMessage = 'Error: ' + error.message;
         }
         console.error(error);
@@ -90,9 +87,11 @@ export default {
   justify-content: center;
   align-items: center;
   height: 100vh;
+  background-image: url('/public/lnubacklogo.jpg');
   background-size: cover;
   background-position: center;
 }
+
 .login-box {
   background-color: white;
   padding: 20px;
@@ -100,5 +99,10 @@ export default {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   max-width: 400px;
   width: 100%;
+  opacity: 90%;
+}
+
+.btn {
+  width: 100%; /* Ensures the button takes up the full width of the login box */
 }
 </style>

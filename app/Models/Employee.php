@@ -43,7 +43,6 @@ class Employee extends Model
         'residential_province',
         'residential_country',
         'residential_zipcode',
-        'status',
     ];
 
     // Specify that deleted_at should be managed by soft deletes

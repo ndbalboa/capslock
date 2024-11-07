@@ -79,34 +79,45 @@ class EmployeeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $employee = Employee::find($id);
-
-        if (!$employee) {
-            return response()->json(['message' => 'Employee not found'], 404);
-        }
-
-        $validator = Validator::make($request->all(), $this->getValidationRules($employee->id));
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 400);
-        }
-
-        $data = $this->getValidatedData($request);
-
+        // Validate general employee data
+        $request->validate([
+            'lastName' => 'required|string|max:255',
+            'firstName' => 'required|string|max:255',
+            'emailAddress' => 'required|email|unique:employees,email,' . $id,
+            'profileImage' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048' // Validate image type
+        ]);
+    
+        // Fetch employee
+        $employee = Employee::findOrFail($id);
+    
+        // Update employee fields
+        $employee->lastName = $request->lastName;
+        $employee->firstName = $request->firstName;
+        $employee->email_address = $request->emailAddress;
+        // Update additional fields as needed...
+    
         // Handle profile image upload
         if ($request->hasFile('profileImage')) {
-            // Delete old image if exists
-            if ($employee->profileImage && Storage::exists('public/' . $employee->profileImage)) {
-                Storage::delete('public/' . $employee->profileImage);
+            // Delete old profile image if it exists
+            if ($employee->profile_image && \Storage::disk('public')->exists($employee->profile_image)) {
+                \Storage::disk('public')->delete($employee->profile_image);
             }
-
-            $data['profileImage'] = $this->storeProfileImage($request);
+    
+            // Store new image and save path
+            $path = $request->file('profileImage')->store('profile_images', 'public');
+            $employee->profile_image = $path;
         }
-
-        $employee->update($data);
-
-        return response()->json(['message' => 'Employee updated successfully', 'employee' => $employee]);
+    
+        // Save employee data
+        $employee->save();
+    
+        return response()->json([
+            'success' => true,
+            'message' => 'Employee updated successfully',
+            'employee' => $employee
+        ]);
     }
+    
 
     /**
      * Register unregistered employee and associate with document.
@@ -337,35 +348,60 @@ class EmployeeController extends Controller
         return response()->json(['message' => 'Employee and associated user account have been deactivated.']);
     }
 
-    public function getDeactivatedEmployees()
+        public function deactivateEmployee($employeeId)
     {
-        // Fetch only soft-deleted employees
-        $deactivatedEmployees = Employee::onlyTrashed()->with('user')->get();
-
-        return response()->json($deactivatedEmployees);
-    }
-
-    public function restore($id)
-    {
-        $employee = Employee::find($id);
-
-        if (!$employee) {
-            return response()->json(['message' => 'Employee not found'], 404);
-        }
-
+        // Find the employee by ID
+        $employee = Employee::findOrFail($employeeId);
+        
         // Soft delete the employee
         $employee->delete();
 
-        // Deactivate the associated user account
-        if ($employee->user) {
-            $user = $employee->user;
-            $user->status = 'inactive';
-            $user->save();
+        // Find the associated user by employee_id
+        $user = User::where('employee_id', $employeeId)->first();
+
+        if ($user) {
+            // Permanently delete the associated user account
+            $user->forceDelete();
         }
 
-        return response()->json(['message' => 'Employee deactivated successfully']);
+        return response()->json([
+            'message' => 'Employee has been deactivated and associated user account has been permanently deleted.'
+        ]);
     }
 
+    public function getDeactivatedEmployees()
+{
+    try {
+        $deactivatedEmployees = Employee::onlyTrashed()->with('user')->get();
+        return response()->json($deactivatedEmployees, 200);
+    } catch (\Exception $e) {
+        // Log the error for debugging
+        \Log::error("Error fetching deactivated employees: " . $e->getMessage());
+        return response()->json(['error' => 'Failed to fetch deactivated employees'], 500);
+    }
+}
+public function restore($id)
+{
+    // Find the employee with soft-deleted status
+    $employee = Employee::withTrashed()->find($id);
+    
+    if ($employee) {
+        // Restore the employee record
+        $employee->restore();
+        
+        // Restore the user account associated with the employee
+        $user = User::where('employee_id', $id)->first();
+        
+        if ($user) {
+            $user->status = 'active'; // Set user account status to active
+            $user->save(); // Save the changes
+        }
+
+        return response()->json(['message' => 'Employee and user account restored successfully.']);
+    }
+
+    return response()->json(['message' => 'Employee not found.'], 404);
+}
     public function forceDelete($id)
     {
         $employee = Employee::withTrashed()->find($id);

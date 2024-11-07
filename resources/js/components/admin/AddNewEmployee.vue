@@ -121,29 +121,29 @@
         <div class="row">
           <div class="col-md-4 mb-3">
             <label for="permanent_street">Street</label>
-            <input type="text" class="form-control" id="permanent_street" v-model="form.permanent_street" required>
+            <input type="text" class="form-control" id="permanent_street" placeholder="Street" v-model="form.permanent_street" required>
           </div>
           <div class="col-md-4 mb-3">
             <label for="permanent_barangay">Barangay</label>
-            <input type="text" class="form-control" id="permanent_barangay" v-model="form.permanent_barangay" required>
+            <input type="text" class="form-control" id="permanent_barangay" placeholder="Barangay" v-model="form.permanent_barangay" required>
           </div>
           <div class="col-md-4 mb-3">
             <label for="permanent_city">Town/City</label>
-            <input type="text" class="form-control" id="permanent_city" v-model="form.permanent_city">
+            <input type="text" class="form-control" id="permanent_city" placeholder="Town/City" v-model="form.permanent_city">
           </div>
         </div>
         <div class="row">
           <div class="col-md-4 mb-3">
             <label for="permanent_province">Province</label>
-            <input type="text" class="form-control" id="permanent_province" v-model="form.permanent_province" required>
+            <input type="text" class="form-control" id="permanent_province" placeholder="Province" v-model="form.permanent_province" required>
           </div>
           <div class="col-md-4 mb-3">
             <label for="permanent_country">Country</label>
-            <input type="text" class="form-control" id="permanent_country" v-model="form.permanent_country" required>
+            <input type="text" class="form-control" id="permanent_country" placeholder="Country" v-model="form.permanent_country" required>
           </div>
           <div class="col-md-4 mb-3">
             <label for="permanent_zipcode">Zipcode</label>
-            <input type="text" class="form-control" id="permanent_zipcode" v-model="form.permanent_zipcode">
+            <input type="text" class="form-control" id="permanent_zipcode" placeholder="Zipcode" v-model="form.permanent_zipcode">
           </div>
         </div>
       </div>
@@ -163,29 +163,29 @@
         <div class="row">
           <div class="col-md-4 mb-3">
             <label for="residential_street">Street</label>
-            <input type="text" class="form-control" id="residential_street" v-model="form.residential_street" required>
+            <input type="text" class="form-control" id="residential_street" placeholder="Street" v-model="form.residential_street" required>
           </div>
           <div class="col-md-4 mb-3">
             <label for="residential_barangay">Barangay</label>
-            <input type="text" class="form-control" id="residential_barangay" v-model="form.residential_barangay" required>
+            <input type="text" class="form-control" id="residential_barangay" placeholder="Barangay" v-model="form.residential_barangay" required>
           </div>
           <div class="col-md-4 mb-3">
             <label for="residential_city">Town/City</label>
-            <input type="text" class="form-control" id="residential_city" v-model="form.residential_city">
+            <input type="text" class="form-control" id="residential_city" placeholder="Town/City"v-model="form.residential_city">
           </div>
         </div>
         <div class="row">
           <div class="col-md-4 mb-3">
             <label for="residential_province">Province</label>
-            <input type="text" class="form-control" id="residential_province" v-model="form.residential_province" required>
+            <input type="text" class="form-control" id="residential_province" placeholder="Province" v-model="form.residential_province" required>
           </div>
           <div class="col-md-4 mb-3">
             <label for="residential_country">Country</label>
-            <input type="text" class="form-control" id="residential_country" v-model="form.residential_country" required>
+            <input type="text" class="form-control" id="residential_country" placeholder="Country" v-model="form.residential_country" required>
           </div>
           <div class="col-md-4 mb-3">
             <label for="residential_zipcode">Zipcode</label>
-            <input type="text" class="form-control" id="residential_zipcode" v-model="form.residential_zipcode">
+            <input type="text" class="form-control" id="residential_zipcode" placeholder="Zipcode" v-model="form.residential_zipcode">
           </div>
         </div>
       </div>

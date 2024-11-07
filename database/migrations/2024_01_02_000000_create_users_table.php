@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('employee_id')->unique()->nullable();
+            $table->unsignedBigInteger('employee_id')->nullable()->unique();
             $table->string('username')->unique();
             $table->string('lastName');
             $table->string('firstName');
@@ -23,7 +23,7 @@ return new class extends Migration
             $table->rememberToken();
             $table->timestamps();
             $table->enum('role', ['user', 'admin', 'secretary'])->default('user');
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->enum('status', ['active', 'inactive', 'deactivated'])->default('active');
 
             $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');
         });
@@ -49,6 +49,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropForeign(['employee_id']);
+        });
+
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');

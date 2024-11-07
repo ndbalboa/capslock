@@ -11,8 +11,6 @@
 
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
-        <script src="https://tst.dynamsoft.com/libs/dwt/17.3/dynamsoft.webtwain.min.js"></script>
-        <script src="https://www.dynamsoft.com/SDK/webtwain/7.5/dwt.min.js"></script>
 
         @vite('resources/css/app.css')
     </head>

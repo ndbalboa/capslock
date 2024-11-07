@@ -23,7 +23,6 @@ import EmployeeInformation from '../components/admin/EmployeeInformation.vue';
 import EmployeeDocuments from '../components/admin/EmployeeDocuments.vue';
 import ChangeCredentials from '../components/user/ChangeCredentials.vue';
 import EmployeeDetails from '../components/admin/EmployeeDetails.vue';
-import Logout from '../components/Logout.vue';
 import DeactivatedEmployees from '../components/admin/DeactivatedEmployees.vue';
 import ScanDocument from '../components/admin/ScanDocument.vue';
 import AutoFill from '../components/admin/AutoFill.vue';
@@ -81,7 +80,7 @@ const routes = [
       { path: 'documents/special-order', component: DocumentsSpecialOrder },
       { path: 'documents/:id', name: 'DocumentDetails', component: DocumentDetails},
       { path: 'employee/add', component: AddNewEmployee },
-      { path: 'employee/list', component: ListOfEmployee },
+      { path: 'employee/list', name: 'EmployeeList', component: ListOfEmployee },
       { path: 'employee/deactivated', component: DeactivatedEmployees },
       { path: 'employee/:id', name: 'EmployeeInformation', component: EmployeeInformation },
       { path: 'createuser', component: CreateUserAccount },
@@ -89,7 +88,6 @@ const routes = [
       { path: 'employees/:id/documents', name: 'EmployeeDocuments', component: EmployeeDocuments, props: true },
       { path: 'mail', component: Mail },
       { path: 'settings', component: Settings },
-      { path: 'logout', component: Logout },
     ],
   },
 
@@ -116,12 +114,11 @@ const routes = [
       { path: 'employee/add', component: SecPageAddNewEmployee },
       { path: 'employee/list', component: SecPageListOfEmployee },
       { path: 'employee/deactivated', component: SecPageDeactivatedEmployees },
-      { path: 'employee/:id', name: 'EmployeeInformation', component: SecPageEmployeeInformation },
-      { path: 'admin/employee/:id', name: 'EmployeeDetails', component: SecPageEmployeeDetails },
+      { path: 'employee/:id', name: 'SecPageEmployeeInformation', component: SecPageEmployeeInformation },
+      { path: 'secretary/employee/:id', name: 'SecPageEmployeeDetails', component: SecPageEmployeeDetails },
       { path: 'employees/:id/documents', name: 'SecPageEmployeeDocuments', component: SecPageEmployeeDocuments, props: true },
       { path: 'mail', component: Mail },
       { path: 'settings', component: Settings },
-      { path: 'logout', component: Logout },
     ],
   },
 
@@ -146,7 +143,6 @@ const routes = [
       { path: 'mail', component: Mail },
       { path: 'settings', component: Settings },
       { path: 'settings/change-credentials', component: ChangeCredentials }, // Change credentials option
-      { path: 'logout', component: Logout },
     ],
   },
 ];

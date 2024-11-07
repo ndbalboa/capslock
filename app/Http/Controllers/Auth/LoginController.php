@@ -60,29 +60,34 @@ class LoginController extends Controller
             'role' => $user->role,
         ]);
     }
-
     public function logout(Request $request)
     {
-        // Get the authenticated user
-        $user = $request->user();
+        // Ensure you're using the correct guard
+        Auth::guard('web')->logout(); // Change 'web' if you have a different guard
 
-        // Log the logout activity
-        Activity::create([
-            'user_id' => $user->id,
-            'description' => 'Logged out of the system',
-        ]);
+        // Invalidate the session
+        $request->session()->invalidate();
 
-        // Delete the current access token
-        $user->currentAccessToken()->delete();
+        // Regenerate the session token
+        $request->session()->regenerateToken();
 
-        // Return a success message
-        return response()->json(['message' => 'Logged out successfully']);
+        return response()->json(['message' => 'Successfully logged out.'], 200);
     }
-
     public function getRecentActivities()
     {
+        $today = Carbon::today(); // Use Carbon for date manipulation
         $activities = Activity::with('user')->orderBy('created_at', 'desc')->get();
 
-        return response()->json($activities);
+        // Count today's logins
+        $loginCountToday = $activities->filter(function ($activity) use ($today) {
+            return strpos($activity->description, 'login') !== false && 
+                Carbon::parse($activity->created_at)->isToday();
+        })->count();
+
+        return response()->json([
+            'activities' => $activities,
+            'login_count_today' => $loginCountToday,
+        ]);
     }
+
 }

@@ -64,9 +64,9 @@
         </transition>
       </li>
       <li class="nav-item">
-        <router-link class="nav-link" to="/user-dashboard/logout">
+        <a href="#" class="nav-link" @click.prevent="confirmLogout">
           <i class="fas fa-sign-out-alt me-2"></i> Logout
-        </router-link>
+        </a>
       </li>
     </ul>
   </div>
@@ -87,7 +87,24 @@ export default {
     toggleSubMenu(menu) {
       this.isSubMenuOpen[menu] = !this.isSubMenuOpen[menu];
     },
+    async confirmLogout() {
+  const confirmed = confirm('Are you sure you want to logout?');
+  if (confirmed) {
+    try {
+      await axios.post('/api/logout', {}, { withCredentials: true });
+      this.$router.push('/');
+    } catch (error) {
+      console.error('Logout failed:', error.response ? error.response.data : error.message);
+      alert('Logout failed: ' + (error.response ? error.response.data.message : 'Server error'));
+    }
+  }
+},
+
   },
+  mounted() {
+    // Optional: Set the Axios base URL for all requests
+    axios.defaults.baseURL = 'http://127.0.0.1:8000'; // Adjust if necessary
+  }
 };
 </script>
 

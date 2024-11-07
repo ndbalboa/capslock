@@ -108,7 +108,7 @@ export default {
 
     // Navigate to employee details
     const viewEmployee = id => {
-      router.push({ name: 'EmployeeDetails', params: { id } });
+      router.push({ name: 'SecPageEmployeeDetails', params: { id } });
     };
 
     // Fetch employees on component mount

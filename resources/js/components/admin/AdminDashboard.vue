@@ -34,23 +34,15 @@
         </div>
       </div>
 
-      <!-- Recent System Activities Section -->
+      <!-- Logged Activities Section -->
       <div class="col-lg-4">
-        <h5>Recent System Activities</h5>
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>Activity</th>
-              <th>Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="activity in recentActivities" :key="activity.id">
-              <td>{{ activity.description }}</td>
-              <td>{{ timeAgo(activity.created_at) }}</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="card bg-danger text-white">
+          <div class="card-body">
+            <h5>Logged Activities Today</h5>
+            <h2>{{ loginCountToday }}</h2>
+            <a href="#" class="btn btn-outline-light btn-sm mt-3">View Details</a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -66,6 +58,7 @@ export default {
       totalDocuments: 0,
       documentCounts: {}, // Object to hold counts for each document type
       recentActivities: [],
+      loginCountToday: 0, // Variable to store today's login count
     };
   },
   created() {
@@ -74,7 +67,7 @@ export default {
   },
   methods: {
     fetchDocumentCounts() {
-      axios.get('/api/admin/documents/counts') // Ensure this matches your Laravel route
+      axios.get('/api/documents/counts')
         .then(response => {
           this.totalDocuments = response.data.total; // Update according to the actual response structure
           this.documentCounts = {}; // Initialize the documentCounts object
@@ -89,7 +82,8 @@ export default {
     fetchRecentActivities() {
       axios.get('/api/recent-activities')
         .then(response => {
-          this.recentActivities = response.data;
+          this.recentActivities = response.data.activities; // Update to access activities from the response
+          this.loginCountToday = response.data.login_count_today; // Get today's login count
         })
         .catch(error => {
           console.error("There was an error fetching the recent activities:", error);

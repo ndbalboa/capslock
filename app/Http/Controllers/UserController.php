@@ -51,6 +51,7 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        // Validate the request data
         $request->validate([
             'employee_id' => 'required|integer|exists:employees,id|unique:users,employee_id',
             'firstName' => 'required|string|max:255',
@@ -61,12 +62,20 @@ class UserController extends Controller
             'role' => 'required|string|in:admin,user,secretary',
         ]);
 
+        // Retrieve the employee by the provided employee_id
         $employee = Employee::find($request->employee_id);
 
+        // Check if the employee is deactivated
         if ($employee && $employee->status === 'deactivated') {
             return response()->json(['error' => 'Cannot create user account. The employee is deactivated.'], 400);
         }
 
+        // Check if the employee already has a user account
+        if ($employee && User::where('employee_id', $employee->id)->exists()) {
+            return response()->json(['error' => 'This employee already has a user account.'], 400);
+        }
+
+        // Create the user account if all validations pass
         $user = User::create([
             'employee_id' => $request->employee_id,
             'firstName' => $request->firstName,
@@ -75,41 +84,43 @@ class UserController extends Controller
             'username' => $request->username,
             'password' => Hash::make($request->password),
             'role' => $request->role,
+            'status' => 'active', // Default status is active
         ]);
 
         return response()->json(['message' => 'User created successfully.', 'user' => $user], 201);
     }
 
-    /**
-     * Change the authenticated user's username and password.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function changeCredentials(Request $request)
-    {
-        $validated = $request->validate([
-            'current_password' => 'required|string|min:8',
-            'username' => 'required|string|max:255|unique:users,username,' . Auth::id(),
-            'password' => 'required|string|min:8|confirmed',
-        ]);
 
-        $user = Auth::user();
+        /**
+         * Change the authenticated user's username and password.
+         *
+         * @param  \Illuminate\Http\Request  $request
+         * @return \Illuminate\Http\JsonResponse
+         */
+        public function changeCredentials(Request $request)
+        {
+            $validated = $request->validate([
+                'current_password' => 'required|string|min:8',
+                'username' => 'required|string|max:255|unique:users,username,' . Auth::id(),
+                'password' => 'required|string|min:8|confirmed',
+            ]);
 
-        if (!Hash::check($validated['current_password'], $user->password)) {
-            return response()->json(['error' => 'Current password is incorrect'], 400);
+            $user = Auth::user();
+
+            if (!Hash::check($validated['current_password'], $user->password)) {
+                return response()->json(['error' => 'Current password is incorrect'], 400);
+            }
+
+            try {
+                $user->username = $validated['username'];
+                $user->password = Hash::make($validated['password']);
+                $user->save();
+
+                return response()->json(['message' => 'Credentials updated successfully']);
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Failed to update credentials: ' . $e->getMessage()], 500);
+            }
         }
-
-        try {
-            $user->username = $validated['username'];
-            $user->password = Hash::make($validated['password']);
-            $user->save();
-
-            return response()->json(['message' => 'Credentials updated successfully']);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to update credentials: ' . $e->getMessage()], 500);
-        }
-    }
 
     /**
      * Update the authenticated user's profile.
@@ -178,9 +189,23 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getDeactivatedEmployees()
+    public function deactivateUser($employeeId)
     {
-        $deactivatedEmployees = User::where('status', 'inactive')->with('employee')->get();
-        return response()->json($deactivatedEmployees);
+        $user = User::where('employee_id', $employeeId)->firstOrFail();
+        $user->status = 'deactivated';
+        $user->save();
+    
+        return response()->json(['message' => 'User account deactivated successfully']);
     }
+    
+    public function activateUser($employeeId)
+    {
+        $user = User::where('employee_id', $employeeId)->firstOrFail();
+        $user->status = 'active';
+        $user->save();
+
+        return response()->json(['message' => 'User account activated successfully']);
+    }
+
+    
 }

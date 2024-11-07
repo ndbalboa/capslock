@@ -11,45 +11,58 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class DocumentController extends Controller
 {
     // Upload and validate the document
     public function upload(Request $request)
     {
+        // Validate that the file is present and has an acceptable type and size
         $request->validate([
             'file' => 'required|mimes:pdf,jpeg,jpg,png,docx|max:20480',
         ]);
-
+    
+        // Get the file from the request
         $file = $request->file('file');
         $fileName = $file->getClientOriginalName();
+        
+        // Store the file in the 'documents' directory in public storage
         $filePath = $file->storeAs('documents', $fileName, 'public');
-
+    
         try {
+            // Send the file to the Flask API with a timeout of 150 seconds
             $response = Http::timeout(150)
-                ->attach('file', file_get_contents($file->getPathname()), $fileName)
-                ->post('http://localhost:5000/api/admin/upload');
-
+                ->attach('document', file_get_contents($file->getPathname()), $fileName)
+                ->post('http://localhost:5000/extract_fields');
+    
+            // Handle any failure responses from Flask API
             if ($response->failed()) {
                 $errorMessage = $response->json('error') ?? 'Failed to communicate with Flask API';
                 Storage::delete($filePath);
                 return response()->json(['error' => $errorMessage], 500);
             }
-
+    
             $data = $response->json();
+    
+            // Check for errors within the response data from Flask API
             if (isset($data['error'])) {
                 Storage::delete($filePath);
                 return response()->json(['error' => $data['error']], 400);
             }
-
-            $extractedFields = $data['extracted_fields'];
+    
+            // Retrieve the extracted fields and document type from Flask's response
+            $extractedFields = $data['fields'];
             $extractedFields['file_path'] = $filePath;
             $extractedFields['document_type'] = $data['document_type'];
-
+    
+            // Return the extracted data in the response
             return response()->json([
                 'document' => $extractedFields,
             ]);
+            
         } catch (\Exception $e) {
+            // Clean up stored file on any exception
             Storage::delete($filePath);
             return response()->json(['error' => 'Failed to process the document: ' . $e->getMessage()], 500);
         }
@@ -411,9 +424,8 @@ class DocumentController extends Controller
     //for document counting on admin dashboard
     public function getDocumentCounts()
     {
-        $totalDocuments = Document::count(); // Get total document count
+        $totalDocuments = Document::count();
 
-        // Get counts grouped by document type
         $countsByType = Document::select('document_type', DB::raw('count(*) as count'))
             ->groupBy('document_type')
             ->get();
@@ -423,6 +435,56 @@ class DocumentController extends Controller
             'counts' => $countsByType,
         ]);
     }
-    
+    public function getUserDocumentCounts(Request $request)
+    {
+        $user = Auth::user(); // Get the authenticated user
+
+        // Fetch documents where employee_names contains the user's last name and first name
+        $documents = Document::whereJsonContains('employee_names', $user->firstName . ' ' . $user->lastName)
+                            ->get();
+
+        // Count documents by type
+        $documentCounts = $documents->groupBy('document_type')->map(function ($group) {
+            return $group->count();
+        });
+
+        return response()->json([
+            'total' => $documents->count(),
+            'counts' => $documentCounts,
+        ]);
+    }
+
+    public function updateDocument(Request $request, $id)
+    {
+        $document = Document::findOrFail($id);
+
+        $validatedData = $request->validate([
+            'document_no' => 'string|nullable',
+            'series_no' => 'string|nullable',
+            'from_date' => 'date|nullable',
+            'to_date' => 'date|nullable',
+            'subject' => 'string|nullable',
+            'description' => 'string|nullable',
+            'date_issued' => 'date|nullable',
+            'employee_names' => 'array|nullable',
+        ]);
+
+        $document->update($validatedData);
+
+        return response()->json($document);
+    }
+    public function destroyDocument($id)
+    {
+        try {
+            $document = Document::findOrFail($id);
+            $document->delete();
+            
+            return response()->json(['message' => 'Document deleted successfully.'], 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'Document not found.'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to delete document.'], 500);
+        }
+    }
     
 }

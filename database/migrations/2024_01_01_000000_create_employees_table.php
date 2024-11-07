@@ -43,7 +43,6 @@ return new class extends Migration
             $table->string('residential_province')->nullable();
             $table->string('residential_country')->nullable();
             $table->string('residential_zipcode')->nullable();
-            $table->enum('status', ['active', 'deactivated'])->default('active');
             $table->softDeletes(); 
 
             $table->timestamps();

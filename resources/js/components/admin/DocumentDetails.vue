@@ -1,25 +1,34 @@
 <template>
   <h2>{{ document ? document.document_type : 'Travel Order' }}</h2>
   <div v-if="document" class="action-buttons">
-    <button @click="viewFile" v-if="document.file_path" class="btn-primary">View File</button>
-    <button @click="downloadFile" v-if="document.file_path" class="btn-secondary">Download File</button>
-    <button @click="deleteDocument" class="btn-danger">Delete Document</button>
+    <button @click="viewFile" v-if="document.file_path" class="btn-primary">
+      <i class="fas fa-eye"></i> View File
+    </button>
+    <button v-if="!isEditing" @click="editDocument" class="btn-secondary">
+      <i class="fas fa-edit"></i> Edit Document
+    </button>
+    <button v-if="isEditing" @click="saveDocument" class="btn-primary">
+      <i class="fas fa-save"></i> Save Changes
+    </button>
+    <button @click="deleteDocument" class="btn-danger">
+      <i class="fas fa-trash"></i> Delete Document
+    </button>
   </div>
   <div class="document-details-container">
     <div v-if="document" class="document-details">
       <div class="details-grid">
         <label for="doc-no"><strong>Document No:</strong></label>
-        <input id="doc-no" v-model="document.document_no" readonly />
+        <input id="doc-no" v-model="document.document_no" :disabled="!isEditing" />
 
         <label for="series-no"><strong>Series Year:</strong></label>
-        <input id="series-no" v-model="document.series_no" readonly />
+        <input id="series-no" v-model="document.series_no" :disabled="!isEditing" />
 
         <div class="inclusive-date">
           <label><strong>Inclusive Date:</strong></label>
           <div class="date-range">
-            <input id="from-date" :value="formatDate(document.from_date)" readonly />
+            <input id="from-date" :value="formatDate(document.from_date)" :disabled="!isEditing" />
             <span>to</span>
-            <input id="to-date" :value="formatDate(document.to_date)" readonly />
+            <input id="to-date" :value="formatDate(document.to_date)" :disabled="!isEditing" />
           </div>
         </div>
 
@@ -28,7 +37,8 @@
           id="subject" 
           v-model="document.subject" 
           @input="resizeTextarea($event)" 
-          readonly
+          :disabled="!isEditing"
+          class="resizable-textarea"
         ></textarea>
 
         <label for="description"><strong>Description:</strong></label>
@@ -36,18 +46,20 @@
           id="description" 
           v-model="document.description" 
           @input="resizeTextarea($event)" 
-          readonly
+          :disabled="!isEditing"
+          class="resizable-textarea"
         ></textarea>
 
         <label for="date-issued"><strong>Date Issued:</strong></label>
-        <input id="date-issued" v-model="document.date_issued" readonly />
+        <input id="date-issued" v-model="document.date_issued" :disabled="!isEditing" />
 
         <label for="employee-names"><strong>Employee Names:</strong></label>
         <textarea 
           id="employee-names" 
           v-model="employeeNames" 
           @input="resizeTextarea($event)" 
-          readonly
+          :disabled="!isEditing"
+          class="resizable-textarea"
         ></textarea>
       </div>
     </div>
@@ -72,7 +84,8 @@ export default {
     return {
       document: null,
       error: null,
-      appUrl: 'http://127.0.0.1:8000', // Set APP_URL directly here
+      isEditing: false,
+      appUrl: 'http://127.0.0.1:8000',
     };
   },
   computed: {
@@ -99,12 +112,24 @@ export default {
         });
       } catch (error) {
         console.error('Error fetching document details:', error);
-
         if (error.response && error.response.status === 404) {
           this.error = 'Document not found.';
         } else {
           this.error = 'Failed to load document details. Please try again later.';
         }
+      }
+    },
+    editDocument() {
+      this.isEditing = true;
+    },
+    async saveDocument() {
+      try {
+        await axios.put(`/api/admin/documents/${this.document.id}`, this.document);
+        alert('Document updated successfully.');
+        this.isEditing = false;
+      } catch (error) {
+        console.error('Error saving document:', error);
+        alert('Failed to save document. Please try again later.');
       }
     },
     formatDate(date) {
@@ -130,31 +155,20 @@ export default {
         console.error('Cannot view file: URL is undefined');
       }
     },
-    downloadFile() {
-      const fileUrl = this.getFileUrl(this.document.file_path);
-      if (fileUrl) {
-        const link = document.createElement('a');
-        link.href = fileUrl;
-        link.download = this.document.file_path.split('/').pop(); // Set the filename based on file path
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } else {
-        console.error('Cannot download file: URL is undefined');
-      }
-    },
     async deleteDocument() {
-      if (confirm('Are you sure you want to delete this document?')) {
-        try {
-          await axios.delete(`/api/admin/documents/${this.document.id}`);
-          alert('Document deleted successfully.');
-          this.$router.push('/documents');
-        } catch (error) {
-          console.error('Error deleting document:', error);
-          alert('Failed to delete document. Please try again later.');
-        }
+    if (confirm('Are you sure you want to delete this document?')) {
+      try {
+        await axios.delete(`/api/admin/documents/${this.document.id}`);
+        alert('Document deleted successfully.');
+        this.$router.push('/documents'); 
+      } catch (error) {
+        console.error('Error deleting document:', error);
+        alert('Failed to delete document. Please try again later.');
       }
-    },
+    } else {
+      alert('Document deletion canceled.');
+    }
+  },
     goBack() {
       this.$router.go(-1);
     },
@@ -162,8 +176,8 @@ export default {
       this.$nextTick(() => {
         const textareas = this.$refs.textareas || [];
         textareas.forEach(textarea => {
-          textarea.style.height = 'auto'; // Reset height
-          textarea.style.height = `${textarea.scrollHeight}px`; // Set to scrollHeight
+          textarea.style.height = 'auto';
+          textarea.style.height = `${textarea.scrollHeight}px`;
         });
       });
     },
@@ -198,7 +212,7 @@ export default {
 }
 
 .action-buttons {
-  margin-top: 90px;
+  margin-top: 115px;
   position: absolute;
   top: 10px;
   right: 10px;
@@ -237,7 +251,9 @@ h2 {
   height: auto; 
   min-height: 40px; 
   overflow: hidden; 
+  resize: vertical; /* Enable vertical resizing */
 }
+
 #description {
   height: 200px; 
 }
@@ -298,6 +314,13 @@ h2 {
 }
 
 .inclusive-date input {
-  width: 130px;
+  width: auto; 
+  text-align: center; 
 }
+
+.resizable-textarea {
+  overflow: auto; 
+  resize: vertical; 
+}
+
 </style>

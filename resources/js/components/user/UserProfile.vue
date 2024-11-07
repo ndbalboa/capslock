@@ -153,9 +153,17 @@
 
         <!-- Buttons -->
         <div class="mt-4">
-          <button v-if="!isEditing" @click="editProfile" class="btn btn-primary">Edit</button>
-          <button v-if="isEditing" @click="saveProfile" class="btn btn-success">Save</button>
-          <button v-if="isEditing" @click="cancelEdit" class="btn btn-secondary">Cancel</button>
+          <div class="mt-4">
+            <button v-if="!isEditing" @click="editProfile" class="btn btn-primary">
+              <i class="fas fa-pencil-alt"></i> Edit
+            </button>
+            <button v-if="isEditing" @click="saveProfile" class="btn btn-success">
+              <i class="fas fa-save"></i> Save
+            </button>
+            <button v-if="isEditing" @click="cancelEdit" class="btn btn-secondary">
+              <i class="fas fa-times"></i> Cancel
+            </button>
+          </div>
         </div>
       </div>
     </div>

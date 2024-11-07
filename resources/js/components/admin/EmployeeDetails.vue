@@ -1,179 +1,196 @@
 <template>
-  <div v-if="employee" class="card profile-card">
-    <div class="card-body profile-card-body">
-      
-      <!-- Profile Info and Actions -->
-      <div class="profile-info-container">
-        <!-- Personal Information -->
-        <div class="personal-info">
-          <h2 class="section-title">Personal Information</h2>
-          <div class="row">
-            <div class="col">
-              <label for="lastName">Last Name</label>
-              <input type="text" id="lastName" class="form-control" v-model="employee.lastName" :disabled="!isEditing">
-            </div>
-            <div class="col">
-              <label for="firstName">First Name</label>
-              <input type="text" id="firstName" class="form-control" v-model="employee.firstName" :disabled="!isEditing">
-            </div>
-            <div class="col">
-              <label for="middleName">Middle Name</label>
-              <input type="text" id="middleName" class="form-control" v-model="employee.middleName" :disabled="!isEditing">
-            </div>
-          </div>
-          <div class="row mt-3">
-            <div class="col">
-              <label for="sex">Sex</label>
-              <input type="text" id="sex" class="form-control" v-model="employee.sex" :disabled="!isEditing">
-            </div>
-            <div class="col">
-              <label for="civilStatus">Civil Status</label>
-              <input type="text" id="civilStatus" class="form-control" v-model="employee.civilStatus" :disabled="!isEditing">
-            </div>
-            <div class="col">
-              <label for="dateOfBirth">Date of Birth</label>
-              <input type="date" id="dateOfBirth" class="form-control" v-model="employee.dateOfBirth" :disabled="!isEditing">
-            </div>
-          </div>
-          <div class="row mt-3">
-            <div class="col">
-              <label for="emailAddress">Email Address</label>
-              <input type="email" id="emailAddress" class="form-control" v-model="employee.emailAddress" :disabled="!isEditing">
-            </div>
-            <div class="col">
-              <label for="phoneNumber">Phone Number</label>
-              <input type="text" id="phoneNumber" class="form-control" v-model="employee.phoneNumber" :disabled="!isEditing">
-            </div>
-          </div>
-
-          <!-- Additional Personal Information -->
-          <div class="row mt-3">
-            <div class="col">
-              <label for="gsisId">GSIS ID</label>
-              <input type="text" id="gsisId" class="form-control" v-model="employee.gsisId" :disabled="!isEditing">
-            </div>
-            <div class="col">
-              <label for="pagibigId">Pag-IBIG ID</label>
-              <input type="text" id="pagibigId" class="form-control" v-model="employee.pagibigId" :disabled="!isEditing">
-            </div>
-            <div class="col">
-              <label for="philhealthId">PhilHealth ID</label>
-              <input type="text" id="philhealthId" class="form-control" v-model="employee.philhealthId" :disabled="!isEditing">
-            </div>
-          </div>
-          <div class="row mt-3">
-            <div class="col">
-              <label for="sssNo">SSS Number</label>
-              <input type="text" id="sssNo" class="form-control" v-model="employee.sssNo" :disabled="!isEditing">
-            </div>
-            <div class="col">
-              <label for="agencyEmploymentNo">Agency Employment No.</label>
-              <input type="text" id="agencyEmploymentNo" class="form-control" v-model="employee.agencyEmploymentNo" :disabled="!isEditing">
-            </div>
-            <div class="col">
-              <label for="taxId">Tax ID</label>
-              <input type="text" id="taxId" class="form-control" v-model="employee.taxId" :disabled="!isEditing">
-            </div>
-          </div>
-          <div class="row mt-3">
-            <div class="col">
-              <label for="academicRank">Academic Rank</label>
-              <input type="text" id="academicRank" class="form-control" v-model="employee.academicRank" :disabled="!isEditing">
-            </div>
-            <div class="col">
-              <label for="universityPosition">University Position</label>
-              <input type="text" id="universityPosition" class="form-control" v-model="employee.universityPosition" :disabled="!isEditing">
-            </div>
-          </div>
-
-          <!-- Permanent Address -->
-          <h2 class="section-title mt-4">Permanent Address</h2>
-          <div class="row">
-            <div class="col">
-              <label for="permanent_street">Street</label>
-              <input type="text" id="permanent_street" class="form-control" v-model="employee.permanent_street" :disabled="!isEditing">
-            </div>
-            <div class="col">
-              <label for="permanent_barangay">Barangay</label>
-              <input type="text" id="permanent_barangay" class="form-control" v-model="employee.permanent_barangay" :disabled="!isEditing">
-            </div>
-            <div class="col">
-              <label for="permanent_city">City</label>
-              <input type="text" id="permanent_city" class="form-control" v-model="employee.permanent_city" :disabled="!isEditing">
-            </div>
-          </div>
-          <div class="row mt-3">
-            <div class="col">
-              <label for="permanent_province">Province</label>
-              <input type="text" id="permanent_province" class="form-control" v-model="employee.permanent_province" :disabled="!isEditing">
-            </div>
-            <div class="col">
-              <label for="permanent_country">Country</label>
-              <input type="text" id="permanent_country" class="form-control" v-model="employee.permanent_country" :disabled="!isEditing">
-            </div>
-            <div class="col">
-              <label for="permanent_zipcode">Zip Code</label>
-              <input type="text" id="permanent_zipcode" class="form-control" v-model="employee.permanent_zipcode" :disabled="!isEditing">
-            </div>
-          </div>
-
-          <!-- Residential Address -->
-          <h2 class="section-title mt-4">Residential Address</h2>
-          <div class="row">
-            <div class="col">
-              <label for="residential_street">Street</label>
-              <input type="text" id="residential_street" class="form-control" v-model="employee.residential_street" :disabled="!isEditing">
-            </div>
-            <div class="col">
-              <label for="residential_barangay">Barangay</label>
-              <input type="text" id="residential_barangay" class="form-control" v-model="employee.residential_barangay" :disabled="!isEditing">
-            </div>
-            <div class="col">
-              <label for="residential_city">City</label>
-              <input type="text" id="residential_city" class="form-control" v-model="employee.residential_city" :disabled="!isEditing">
-            </div>
-          </div>
-          <div class="row mt-3">
-            <div class="col">
-              <label for="residential_province">Province</label>
-              <input type="text" id="residential_province" class="form-control" v-model="employee.residential_province" :disabled="!isEditing">
-            </div>
-            <div class="col">
-              <label for="residential_country">Country</label>
-              <input type="text" id="residential_country" class="form-control" v-model="employee.residential_country" :disabled="!isEditing">
-            </div>
-            <div class="col">
-              <label for="residential_zipcode">Zip Code</label>
-              <input type="text" id="residential_zipcode" class="form-control" v-model="employee.residential_zipcode" :disabled="!isEditing">
-            </div>
-          </div>
+  <!-- Profile Info Container -->
+  <div class="profile-info-container">
+    <!-- Left side: Personal Info, IDs, and Addresses -->
+    <div class="left-side">
+      <h2>Account Settings</h2>
+      <h4>Personal Information</h4>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" v-model="employee.lastName" class="form-control" :disabled="!isEditing">
+        </div>
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" v-model="employee.firstName" class="form-control" :disabled="!isEditing">
+        </div>
+        <div class="form-group">
+          <label>Middle Name</label>
+          <input type="text" v-model="employee.middleName" class="form-control" :disabled="!isEditing">
         </div>
       </div>
-        <!-- Profile Image and Buttons -->
-        <div class="profile-actions">
-        <button @click="viewEmployeeDocuments" class="btn btn-primary">View Employee's Documents</button>
-        <div class="profile-image-container">
-          <img :src="employee.profileImage || 'default-profile.png'" class="profile-image" alt="Profile Image">
-        </div>
-        <div v-if="isEditing" class="mt-3">
-          <input type="file" @change="handleImageUpload" accept="image/*" />
-          <button v-if="employee.profileImage && !imageToDelete" @click="confirmDeleteImage" class="btn btn-danger mt-2">Delete Image</button>
-        </div>
 
-        <!-- Edit, Save, Cancel buttons -->
-        <div class="d-flex justify-content-end mt-3">
-          <button v-if="!isEditing" @click="enableEdit" class="btn btn-warning">Update Employee Information</button>
-          <button v-if="isEditing" @click="saveEmployeeDetails" class="btn btn-success me-2">Save</button>
-          <button v-if="isEditing" @click="cancelEdit" class="btn btn-secondary">Cancel</button>
-          <!-- Delete Button -->
-          <button @click="softDeleteEmployee" class="btn btn-danger ms-2">Deactivate Employee</button>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Sex</label>
+          <select v-model="employee.sex" class="form-control" :disabled="!isEditing">
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Civil Status</label>
+          <input type="text" v-model="employee.civilStatus" class="form-control" :disabled="!isEditing">
+        </div>
+        <div class="form-group">
+          <label>Date of Birth</label>
+          <input type="date" v-model="employee.dateOfBirth" class="form-control" :disabled="!isEditing">
+        </div>
+        <div class="form-group">
+          <label>Religion</label>
+          <input type="text" v-model="employee.religion" class="form-control" :disabled="!isEditing">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" v-model="employee.emailAddress" class="form-control" :disabled="!isEditing">
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" v-model="employee.phoneNumber" class="form-control" :disabled="!isEditing">
+        </div>
+      </div>
+
+      <!-- Government IDs -->
+      <h4>Government IDs</h4>
+      <div class="form-row">
+        <div class="form-group">
+          <label>GSIS ID</label>
+          <input type="text" v-model="employee.gsisId" class="form-control" :disabled="!isEditing">
+        </div>
+        <div class="form-group">
+          <label>Pag-IBIG ID</label>
+          <input type="text" v-model="employee.pagibigId" class="form-control" :disabled="!isEditing">
+        </div>
+        <div class="form-group">
+          <label>PhilHealth ID</label>
+          <input type="text" v-model="employee.philhealthId" class="form-control" :disabled="!isEditing">
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label>SSS No</label>
+          <input type="text" v-model="employee.sssNo" class="form-control" :disabled="!isEditing">
+        </div>
+        <div class="form-group">
+          <label>Agency Employment No</label>
+          <input type="text" v-model="employee.agencyEmploymentNo" class="form-control" :disabled="!isEditing">
+        </div>
+        <div class="form-group">
+          <label>Tax ID</label>
+          <input type="text" v-model="employee.taxId" class="form-control" :disabled="!isEditing">
+        </div>
+      </div>
+
+      <h4>Academic Details</h4>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Academic Rank</label>
+          <input type="text" v-model="employee.academicRank" class="form-control" :disabled="!isEditing">
+        </div>
+        <div class="form-group">
+          <label>University Position</label>
+          <input type="text" v-model="employee.universityPosition" class="form-control" :disabled="!isEditing">
+        </div>
+      </div>
+
+      <h4>Addresses</h4>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Permanent Street</label>
+          <input type="text" v-model="employee.permanent_street" class="form-control" :disabled="!isEditing">
+        </div>
+        <div class="form-group">
+          <label>Permanent Barangay</label>
+          <input type="text" v-model="employee.permanent_barangay" class="form-control" :disabled="!isEditing">
+        </div>
+        <div class="form-group">
+          <label>Permanent City</label>
+          <input type="text" v-model="employee.permanent_city" class="form-control" :disabled="!isEditing">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Permanent Province</label>
+          <input type="text" v-model="employee.permanent_province" class="form-control" :disabled="!isEditing">
+        </div>
+        <div class="form-group">
+          <label>Permanent Country</label>
+          <input type="text" v-model="employee.permanent_country" class="form-control" :disabled="!isEditing">
+        </div>
+        <div class="form-group">
+          <label>Permanent Zip Code</label>
+          <input type="text" v-model="employee.permanent_zipcode" class="form-control" :disabled="!isEditing">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Residential Street</label>
+          <input type="text" v-model="employee.residential_street" class="form-control" :disabled="!isEditing">
+        </div>
+        <div class="form-group">
+          <label>Residential Barangay</label>
+          <input type="text" v-model="employee.residential_barangay" class="form-control" :disabled="!isEditing">
+        </div>
+        <div class="form-group">
+          <label>Residential City</label>
+          <input type="text" v-model="employee.residential_city" class="form-control" :disabled="!isEditing">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Residential Province</label>
+          <input type="text" v-model="employee.residential_province" class="form-control" :disabled="!isEditing">
+        </div>
+        <div class="form-group">
+          <label>Residential Country</label>
+          <input type="text" v-model="employee.residential_country" class="form-control" :disabled="!isEditing">
+        </div>
+        <div class="form-group">
+          <label>Residential Zip Code</label>
+          <input type="text" v-model="employee.residential_zipcode" class="form-control" :disabled="!isEditing">
         </div>
       </div>
     </div>
-  </div>
-  <!-- Loading state -->
-  <div v-else>
-    <p class="text-center">Loading...</p>
+
+    <!-- Right side: Profile Image and Actions -->
+    <div class="right-side">
+      <!-- Profile Actions -->
+      <button @click="viewEmployeeDocuments" class="btn btn-primary">
+        <i class="fas fa-folder-open"></i> View Employee's Documents
+      </button>
+      <div class="profile-image-container">
+        <img :src="employee.profileImage || 'default-profile.png'" class="profile-image" alt="Profile Image">
+      </div>
+      <div v-if="isEditing" class="upload-section">
+        <input type="file" @change="handleImageUpload" accept="image/*" />
+        <button v-if="employee.profileImage && !imageToDelete" @click="confirmDeleteImage" class="btn btn-danger mt-2">Delete Image</button>
+      </div>
+
+      <!-- Edit, Save, Cancel buttons -->
+      <div class="button-group mt-3">
+        <button v-if="!isEditing" @click="enableEdit" class="btn btn-warning">
+          <i class="fas fa-edit"></i> Update Information
+        </button>
+        
+        <button v-if="isEditing" @click="saveEmployeeDetails" class="btn btn-success me-2">
+          <i class="fas fa-save"></i> Save
+        </button>
+        
+        <button v-if="isEditing" @click="cancelEdit" class="btn btn-secondary">
+          <i class="fas fa-times"></i> Cancel
+        </button>
+        
+        <button @click="softDeleteEmployee" class="btn btn-danger ms-2">
+          <i class="fas fa-user-slash"></i> Deactivate Employee
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -248,7 +265,7 @@ export default {
     async softDeleteEmployee() {
       if (confirm('Are you sure you want to deactivate this employee?')) {
         try {
-          await axios.delete(`/api/admin/employees/${this.employee.id}`);
+          await axios.delete(`/api/admin/employees/${this.employee.id}/deactivate`);
           alert('Employee has been deactivated.');
           this.$router.push({ name: 'EmployeeList' });
         } catch (error) {
@@ -268,39 +285,91 @@ export default {
 .profile-info-container {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
-.personal-info {
+
+.left-side {
+  flex: 3;
+  margin-right: 20px;
+}
+
+.right-side {
   flex: 1;
-}
-.profile-actions {
-  flex-basis: 350px; 
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-left: 20px; 
+  text-align: center;
 }
+
 .profile-image-container {
-  height: 450px;
-  width: 300px;
   position: relative;
-  background-image: url('/user.png');
+  width: 150px;
+  height: 200px;
+  background-image: url('/public/user.png'); /* Replace with actual path to background image */
   background-size: cover;
   background-position: center;
-  border-radius: 10px;
-  overflow: hidden;
+  border-radius: 50%;
+  margin-top: 10px;
+  overflow: hidden; /* Ensures the image stays within circular shape */
 }
+
 .profile-image {
-  height: 100%;
   width: 100%;
+  height: 100%;
   object-fit: cover;
 }
-.documents-button {
-  margin-top: 0;
+
+.upload-section {
+  margin-top: 20px;
 }
-.section-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: #333;
+
+.upload-section input {
+  display: block;
+  margin: 0 auto;
+}
+
+.upload-section button {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.form-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  gap: 15px;
+}
+
+.form-group {
+  flex: 1 1 calc(33.33% - 10px);
+  margin-bottom: 15px;
+  min-width: 150px; 
+}
+
+.form-group label {
+  font-weight: bold;
+}
+
+.me-2 {
+  margin-right: 8px;
+}
+
+.ms-2 {
+  margin-left: 8px;
 }
 </style>
+

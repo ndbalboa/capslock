@@ -78,10 +78,14 @@
           <transition-group name="fade" tag="div">
             <div v-for="(employee, index) in document.employee_names" :key="index" class="employee-group">
               <input type="text" v-model="document.employee_names[index]" />
-              <button type="button" class="btn-remove" @click="removeEmployee(index)">Remove</button>
+              <button type="button" class="btn-remove" @click="removeEmployee(index)">
+                <i class="fas fa-trash-alt"></i> Remove
+              </button>
             </div>
           </transition-group>
-          <button type="button" class="btn-add" @click="addEmployee">Add Employee</button>
+          <button type="button" class="btn-add" @click="addEmployee">
+              <i class="fas fa-plus"></i> Add Employee
+          </button>
         </div>
       </div>
 
@@ -243,6 +247,9 @@ button {
   border-radius: 4px;
   padding: 10px;
   font-size: 1rem;
+}
+.btn-add i, .btn-remove i, .btn-submit i {
+  margin-right: 5px; /* Adds space between icon and text */
 }
 
 .btn-add {

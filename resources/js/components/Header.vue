@@ -1,7 +1,14 @@
 <template>
   <header class="d-flex justify-content-between align-items-center p-3 bg-custom border-bottom-custom">
-    <h1 class="h5 mb-0 text-white">Optimized Document Categorization </h1>
-    <div class="clock text-white">{{ currentTime }}</div>
+    <div class="d-flex align-items-center">
+      <img src="/public/assets/lnulogo.jpg" alt="Logo" class="logo-image" />
+      <h1 class="h5 mb-0 text-white ms-2">
+        LEYTE NORMAL UNIVERSITY Records Office
+      </h1>
+    </div>
+    <div class="clock-box">
+      <div class="clock">{{ currentDate }}<br />{{ currentTime }}</div>
+    </div>
   </header>
 </template>
 
@@ -10,23 +17,25 @@ export default {
   name: 'Header',
   data() {
     return {
+      currentDate: this.formatDate(new Date()),
       currentTime: this.formatTime(new Date())
     };
   },
   created() {
-    this.updateTime();
-    setInterval(this.updateTime, 1000);
+    this.updateClock();
+    setInterval(this.updateClock, 1000);
   },
   methods: {
-    updateTime() {
-      this.currentTime = this.formatTime(new Date());
+    updateClock() {
+      const now = new Date();
+      this.currentDate = this.formatDate(now);
+      this.currentTime = this.formatTime(now);
+    },
+    formatDate(date) {
+      return date.toISOString().split('T')[0] + ' ' + date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
     },
     formatTime(date) {
-      const options = {
-        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
-        hour: '2-digit', minute: '2-digit', second: '2-digit'
-      };
-      return date.toLocaleDateString('en-US', options);
+      return date.toLocaleTimeString('en-US', { hour12: true });
     }
   }
 };
@@ -34,29 +43,57 @@ export default {
 
 <style scoped>
 .bg-custom {
-  background-color: #002f6c; /* Navy blue */
-  border-bottom: 4px solid #ffd700; /* Gold */
+  background-color: #002f6c; 
+  border-bottom: 4px solid #ffd700;
 }
 
 .border-bottom-custom {
-  border-bottom: 4px solid #ffd700; /* Gold */
+  border-bottom: 4px solid #ffd700;
 }
 
 header {
-  height: 80px; /* Adjust height as needed */
+  height: 110px;
+}
+
+.logo-image {
+  width: 90px; 
+  height: auto;
+  margin-right: 10px; 
+  border-radius: 100%;
 }
 
 h1 {
-  font-size: 1.25rem; /* Slightly larger font size for the header */
-  font-weight: 600; /* Slightly bolder font weight */
-  margin-bottom: 0; /* Remove margin-bottom */
+  margin-left: 20px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  font-family: 'Georgia', serif; /* Serif font similar to the example */
+  letter-spacing: 3px; /* Adds space between characters for a stretched look */
+  text-transform: uppercase; /* Ensures text is in all uppercase */
+}
+
+.subtext {
+  display: block;
+  font-size: 1rem;
+  font-weight: bold;
+  font-family: 'Georgia', serif; /* Match font with main heading */
+  margin-top: 5px;
+  margin-left: 300px; /* Adjust margin for alignment */
+  letter-spacing: 1px; /* Adds space between characters for a similar look */
+}
+.clock-box {
+  border: 1px solid #ffffff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin-right: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .clock {
-  font-size: 0.875rem; /* Font size for the clock */
-  font-weight: 400; /* Normal font weight */
-  background-color: rgba(0, 0, 0, 0.3); /* Slightly transparent background for better readability */
-  padding: 5px 10px; /* Add padding around the time */
-  border-radius: 5px; /* Rounded corners */
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.5rem;
+  color: #ffffff;
+  text-align: center;
 }
 </style>

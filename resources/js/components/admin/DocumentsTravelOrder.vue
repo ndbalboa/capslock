@@ -15,11 +15,22 @@
       </div>
     </div>
 
-    <!-- Pagination Controls (Below Search Bar) -->
+    <!-- Pagination Controls with Result Count (Below Search Bar) -->
     <div class="pagination-controls">
-      <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
+      <div class = "row">
+      <span class="results-count">{{ resultsText }}</span>
+      </div>
+      <div class ="row">
+        <div class ="col">
+      <button @click="prevPage" :disabled="currentPage === 1">Prev</button>
+        </div>
+        <div class ="col" >
       <span>Page {{ currentPage }} of {{ totalPages }}</span>
+        </div>
+        <div class ="col">
       <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
+        </div>
+      </div>
     </div>
 
     <!-- Table -->
@@ -27,12 +38,9 @@
       <thead>
         <tr>
           <th>Document No</th>
-          <th>From Date</th>
-          <th>To Date</th>
           <th>Subject</th>
           <th>Description</th>
           <th>Date Issued</th>
-          <th>Employee Names</th>
         </tr>
       </thead>
       <tbody>
@@ -43,12 +51,9 @@
           class="clickable-row"
         >
           <td>{{ document.document_no }}</td>
-          <td>{{ document.from_date }}</td>
-          <td>{{ document.to_date }}</td>
           <td>{{ document.subject }}</td>
           <td>{{ document.description }}</td>
           <td>{{ document.date_issued }}</td>
-          <td>{{ document.employee_names ? document.employee_names.join(', ') : 'N/A' }}</td>
         </tr>
       </tbody>
     </table>
@@ -87,6 +92,11 @@ export default {
     totalPages() {
       return Math.ceil(this.filteredDocuments.length / this.perPage);
     },
+    resultsText() {
+      const start = (this.currentPage - 1) * this.perPage + 1;
+      const end = Math.min(start + this.perPage - 1, this.filteredDocuments.length);
+      return `Results ${start}-${end} out of ${this.filteredDocuments.length}`;
+    },
   },
   methods: {
     async fetchDocuments() {
@@ -122,7 +132,7 @@ export default {
 .document-container {
   margin: 5px;
   padding: 10px;
-  background-color: #f9f9f9;
+  background-color: white;
   border-radius: 5px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   animation: fadeIn 0.5s ease-in;
@@ -170,8 +180,14 @@ h2 {
 
 .pagination-controls {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
   margin: 10px 0 20px;
+}
+
+.results-count {
+  font-size: 14px;
+  color: #555;
 }
 
 .pagination-controls button {
@@ -198,6 +214,7 @@ h2 {
   margin: 0 10px;
   font-size: 12px;
   text-align: center;
+  white-space: nowrap;
 }
 
 .document-table {
@@ -209,6 +226,7 @@ h2 {
 .document-table th,
 .document-table td {
   padding: 10px;
+  max-width: 20px;
   text-align: left;
   border-bottom: 1px solid #ddd;
 }
@@ -219,7 +237,7 @@ h2 {
 }
 
 .document-table tr:hover {
-  background-color: #f5f5f5;
+  background-color: #f1f1f1;
   transition: background-color 0.3s ease;
 }
 

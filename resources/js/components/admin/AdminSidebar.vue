@@ -44,6 +44,47 @@
                 <i class="bi bi-file-earmark-text me-2"></i> Special Order
               </router-link>
             </li>
+            <span>DBM</span>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/admin-dashboard/documents/travel-order">
+                <i class="bi bi-file-earmark-text me-2"></i> SARO
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/admin-dashboard/documents/office-order">
+                <i class="bi bi-file-earmark-text me-2"></i> NCA
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/admin-dashboard/documents/special-order">
+                <i class="bi bi-file-earmark-text me-2"></i> Budget Circular
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/admin-dashboard/documents/travel-order">
+                <i class="bi bi-file-earmark-text me-2"></i> Circular Letter
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/admin-dashboard/documents/office-order">
+                <i class="bi bi-file-earmark-text me-2"></i> Advice of NCA Issued
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/admin-dashboard/documents/special-order">
+                <i class="bi bi-file-earmark-text me-2"></i> Advisory
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/admin-dashboard/documents/travel-order">
+                <i class="bi bi-file-earmark-text me-2"></i> Joint Circular
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/admin-dashboard/documents/office-order">
+                <i class="bi bi-file-earmark-text me-2"></i> Memorandum Circular
+              </router-link>
+            </li>
           </ul>
         </transition>
       </li>
@@ -77,6 +118,37 @@
         <router-link class="nav-link" to="/admin-dashboard/mail">
           <i class="bi bi-envelope-fill me-2"></i> Mail
         </router-link>
+      </li>
+      <li class="nav-item" @click.prevent="toggleReportsSubMenu">
+        <a class="nav-link d-flex align-items-center">
+          <i class="bi bi-file-earmark-bar-graph-fill"></i>
+          <span>Reports</span>
+          <i :class="['bi', isReportsSubMenuOpen ? 'bi-caret-down-fill' : 'bi-caret-left-fill', 'ms-auto']"></i>
+        </a>
+        <transition name="slide-fade">
+          <ul v-show="isReportsSubMenuOpen" class="nav flex-column ms-3 submenu">
+            <li class="nav-item">
+              <router-link class="nav-link" to="">
+               Generate Report
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link" to="">
+                 Travel Order
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link" to="">
+                 Office Order
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link" to="">
+                 Special Order
+              </router-link>
+            </li>
+          </ul>
+        </transition>
       </li>
       <li class="nav-item" @click.prevent="toggleSettingsSubMenu">
         <a class="nav-link d-flex align-items-center">
@@ -115,21 +187,24 @@
         </transition>
       </li>
       <li class="nav-item">
-        <router-link class="nav-link" to="/admin-dashboard/logout">
+        <a href="#" class="nav-link" @click.prevent="confirmLogout">
           <i class="fas fa-sign-out-alt me-2"></i> Logout
-        </router-link>
+        </a>
       </li>
     </ul>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'AdminSidebar',
   data() {
     return {
       isDocumentsSubMenuOpen: false,
       isEmployeesSubMenuOpen: false,
+      isReportsSubMenuOpen:false,
       isSettingsSubMenuOpen: false,
     };
   },
@@ -140,11 +215,32 @@ export default {
     toggleEmployeesSubMenu() {
       this.isEmployeesSubMenuOpen = !this.isEmployeesSubMenuOpen;
     },
+    toggleReportsSubMenu() {
+      this.isReportsSubMenuOpen = !this.isReportsSubMenuOpen;
+    },
     toggleSettingsSubMenu() {
       this.isSettingsSubMenuOpen = !this.isSettingsSubMenuOpen;
     },
+    async confirmLogout() {
+  const confirmed = confirm('Are you sure you want to logout?');
+  if (confirmed) {
+    try {
+      await axios.post('/api/logout', {}, { withCredentials: true });
+      this.$router.push('/');
+    } catch (error) {
+      console.error('Logout failed:', error.response ? error.response.data : error.message);
+      alert('Logout failed: ' + (error.response ? error.response.data.message : 'Server error'));
+    }
+  }
+},
+
   },
+  mounted() {
+    // Optional: Set the Axios base URL for all requests
+    axios.defaults.baseURL = 'http://127.0.0.1:8000'; // Adjust if necessary
+  }
 };
+
 </script>
 
 <style scoped>

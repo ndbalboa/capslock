@@ -14,19 +14,20 @@ use App\Http\Controllers\DocumentController;
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth:sanctum');
 Route::get('/recent-activities', [LoginController::class, 'getRecentActivities']);
+Route::get('/documents/counts', [DocumentController::class, 'getDocumentCounts']);
+Route::get('/user/documents/counts', [DocumentController::class, 'getUserDocumentCounts']);
 
 // Employee Routes (Admin only)
 Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
-    Route::get('employees/deactivated', [EmployeeController::class, 'getDeactivatedEmployees']);
+    Route::delete('/employees/{employeeId}/deactivate', [EmployeeController::class, 'deactivateEmployee']);
+    Route::get('/employees/no-user-or-deleted', [EmployeeController::class, 'getDeactivatedEmployees']);
+    Route::post('users/{employeeId}/activate', [UserController::class, 'activateUser']);
     Route::delete('/employees/{id}', [EmployeeController::class, 'destroy']);
     Route::get('/employees', [EmployeeController::class, 'index']);
     Route::post('/employees', [EmployeeController::class, 'store']);
     Route::get('employees/{id}', [EmployeeController::class, 'show']);
-    Route::delete('/admin/employees/{id}', [EmployeeController::class, 'delete']);
+    Route::delete('/employees/{id}', [EmployeeController::class, 'destroy'])->name('employees.destroy'); 
     Route::put('/employees/{id}', [EmployeeController::class, 'update']);
-    Route::put('/employees/{id}/deactivate', [EmployeeController::class, 'deactivate']);
-    Route::post('/employees/{id}/deactivate', [EmployeeController::class, 'deactivate']);
-    Route::put('/employees/{id}/reactivate', [EmployeeController::class, 'reactivate']);
     Route::post('/users', [UserController::class, 'store']);
     Route::post('/employees/{id}/restore', [EmployeeController::class, 'restore']);
     Route::delete('/employees/{id}/forceDelete', [EmployeeController::class, 'forceDeleteEmployee']);
@@ -45,9 +46,10 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::get('/documents/download/{id}', [DocumentController::class, 'download']);
     Route::post('/search', [DocumentController::class, 'search']);
     Route::post('/advanced-search', [DocumentController::class, 'advancedSearch']);
-    Route::get('/documents/counts', [DocumentController::class, 'getDocumentCounts']);
+    Route::put('/documents/{id}', [DocumentController::class, 'updateDocument']);
+    Route::delete('/admin/documents/{id}', [DocumentController::class, 'destroyDocument']);
     
-
+    
 
 });
 
@@ -68,4 +70,3 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user/documents/{type?}', [DocumentController::class, 'getUserDocumentsByType']);
 });
 
-// Ensure there are no conflicts or redundancy
