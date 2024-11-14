@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Document;
 use App\Models\Employee;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
@@ -18,25 +19,19 @@ class DocumentController extends Controller
     // Upload and validate the document
     public function upload(Request $request)
     {
-        // Validate that the file is present and has an acceptable type and size
         $request->validate([
             'file' => 'required|mimes:pdf,jpeg,jpg,png,docx|max:20480',
         ]);
     
-        // Get the file from the request
         $file = $request->file('file');
         $fileName = $file->getClientOriginalName();
-        
-        // Store the file in the 'documents' directory in public storage
         $filePath = $file->storeAs('documents', $fileName, 'public');
     
         try {
-            // Send the file to the Flask API with a timeout of 150 seconds
-            $response = Http::timeout(150)
-                ->attach('document', file_get_contents($file->getPathname()), $fileName)
-                ->post('http://localhost:5000/extract_fields');
+            $response = Http::timeout(500)
+                ->attach('file', file_get_contents($file->getPathname()), $fileName)
+                ->post('http://localhost:5000/api/admin/upload');
     
-            // Handle any failure responses from Flask API
             if ($response->failed()) {
                 $errorMessage = $response->json('error') ?? 'Failed to communicate with Flask API';
                 Storage::delete($filePath);
@@ -44,30 +39,24 @@ class DocumentController extends Controller
             }
     
             $data = $response->json();
-    
-            // Check for errors within the response data from Flask API
             if (isset($data['error'])) {
                 Storage::delete($filePath);
                 return response()->json(['error' => $data['error']], 400);
             }
     
-            // Retrieve the extracted fields and document type from Flask's response
-            $extractedFields = $data['fields'];
+            $extractedFields = $data['extracted_fields'];
             $extractedFields['file_path'] = $filePath;
             $extractedFields['document_type'] = $data['document_type'];
     
-            // Return the extracted data in the response
             return response()->json([
                 'document' => $extractedFields,
             ]);
-            
         } catch (\Exception $e) {
-            // Clean up stored file on any exception
             Storage::delete($filePath);
             return response()->json(['error' => 'Failed to process the document: ' . $e->getMessage()], 500);
         }
     }
-
+    
     // Save the document and handle employee associations (both registered and unregistered)
     public function save(Request $request)
     {
@@ -78,6 +67,8 @@ class DocumentController extends Controller
             'from_date' => 'nullable|string',
             'to_date' => 'nullable|string',
             'subject' => 'nullable|string',
+            'venue' => 'nullable|string',
+            'destination' => 'nullable|string',
             'description' => 'nullable|string',
             'document_type' => 'required|string',
             'file_path' => 'required|string',

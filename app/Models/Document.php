@@ -16,15 +16,22 @@ class Document extends Model
         'from_date', 
         'to_date', 
         'subject', 
-        'description', 
+        'description',
+        'venue',
+        'destination',
         'document_type', 
         'file_path', 
-        'employee_names' 
+        'employee_names',
+        'created_at'
     ];
 
     protected $casts = [
         'employee_names' => 'array',
     ];
+    public function scopeWithinDateRange($query, $startDate, $endDate)
+    {
+        return $query->whereBetween('date_issued', [$startDate, $endDate]);
+    }
 
     public function documentEmployeeNames()
     {

@@ -119,7 +119,7 @@ export default {
     },
     goToDocumentDetails(documentId) {
       // Use the router to navigate to the document details page
-      this.$router.push({ name: 'DocumentDetails', params: { id: documentId } });
+      this.$router.push({ name: 'TravelOrderDocDetails', params: { id: documentId } });
     },
   },
   mounted() {
@@ -234,6 +234,7 @@ h2 {
 .document-table th {
   background-color: #f1f1f1;
   font-weight: bold;
+  
 }
 
 .document-table tr:hover {

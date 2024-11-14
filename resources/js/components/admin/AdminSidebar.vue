@@ -128,22 +128,22 @@
         <transition name="slide-fade">
           <ul v-show="isReportsSubMenuOpen" class="nav flex-column ms-3 submenu">
             <li class="nav-item">
-              <router-link class="nav-link" to="">
+              <router-link class="nav-link" to="/admin-dashboard/generateReports">
                Generate Report
               </router-link>
             </li>
             <li class="nav-item">
-              <router-link class="nav-link" to="">
+              <router-link class="nav-link" to="/admin-dashboard/generateTravelReports">
                  Travel Order
               </router-link>
             </li>
             <li class="nav-item">
-              <router-link class="nav-link" to="">
+              <router-link class="nav-link" to="/admin-dashboard/officeOrderReports">
                  Office Order
               </router-link>
             </li>
             <li class="nav-item">
-              <router-link class="nav-link" to="">
+              <router-link class="nav-link" to="/admin-dashboard/generateSpecialReports">
                  Special Order
               </router-link>
             </li>
@@ -179,7 +179,7 @@
               </router-link>
             </li>
             <li class="nav-item">
-              <router-link class="nav-link" to="">
+              <router-link class="nav-link" to="/admin-dashboard/settings">
                 Settings
               </router-link>
             </li>
@@ -253,6 +253,11 @@ export default {
   text-decoration: none;
   color: inherit;
   transition: background-color 0.3s;
+ 
+}
+
+.submenu .nav-link .bi {
+  font-size: 1rem;
 }
 .nav-link:hover {
   background-color: #f0f0f0;

@@ -85,7 +85,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="document in searchResults" :key="document.id" @click="goToDocumentDetails(document.id)" style="cursor: pointer;">
+          <tr v-for="document in searchResults" :key="document.id" @click="goToDocumentDetails(document.id, document.document_type)" style="cursor: pointer;">
             <td>{{ document.document_no }}</td>
             <td>{{ document.subject }}</td>
             <td>{{ document.date_issued }}</td>
@@ -150,9 +150,15 @@ export default {
           console.error('Error performing advanced search:', error);
         });
     },
-    goToDocumentDetails(documentId) {
+    goToDocumentDetails(documentId, documentType) {
+  // Check the document type and navigate accordingly
+    if (documentType === 'Travel Order') {
+      this.$router.push({ name: 'TravelOrderDocDetails', params: { id: documentId } });
+    } else {
+      // Default route for other document types
       this.$router.push({ name: 'DocumentDetails', params: { id: documentId } });
     }
+  }
   }
 };
 </script>

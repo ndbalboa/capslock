@@ -15,6 +15,8 @@ class CreateDocumentsTable extends Migration
             $table->date('date_issued')->nullable();
             $table->string('from_date')->nullable();
             $table->string('to_date')->nullable();
+            $table->string('venue')->nullable();
+            $table->string('destination')->nullable();
             $table->string('subject')->nullable();
             $table->text('description')->nullable();
             $table->string('document_type');

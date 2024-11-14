@@ -71,6 +71,14 @@
           <label>Description:</label>
           <textarea v-model="document.description"></textarea>
         </div>
+        <div class="form-group">
+          <label>Venue:</label>
+          <input type="text" v-model="document.venue" />
+        </div>
+        <div class="form-group">
+          <label>Destination:</label>
+          <input type="text" v-model="document.destination" />
+        </div>
 
         <!-- Employee Names Section -->
         <div class="form-group">
@@ -111,6 +119,8 @@ export default {
         to: "",
         subject: "",
         description: "",
+        venue:"",
+        destination:"",
         document_type: "Travel Order", // Default document type
         employee_names: [], // Array to store employee names
         file_path: "", // For storing the file path returned from the backend

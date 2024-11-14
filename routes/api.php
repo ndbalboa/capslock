@@ -8,6 +8,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\EmployeeProfileController;
 use App\Http\Controllers\ScanController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\ReportController;
 
 
 // Authentication Routes
@@ -48,8 +49,15 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::post('/advanced-search', [DocumentController::class, 'advancedSearch']);
     Route::put('/documents/{id}', [DocumentController::class, 'updateDocument']);
     Route::delete('/admin/documents/{id}', [DocumentController::class, 'destroyDocument']);
-    
-    
+    Route::post('/upload-document', [DocumentController::class, 'uploadDocument']);
+    Route::get('/reports/generate', [ReportController::class, 'generateReport']);
+    Route::get('/reports', [ReportController::class, 'index']);
+    Route::post('/generate-report', [ReportController::class, 'generateDocumentReport']);
+    Route::get('/travel-orders', [ReportController::class, 'generateTravelOrderReport']);
+    Route::get('/listreport', [ReportController::class, 'listReports']);
+    Route::delete('/deletereport', [ReportController::class, 'deleteReport']);
+    Route::get('/employees', [ReportController::class, 'employeename']);
+
 
 });
 

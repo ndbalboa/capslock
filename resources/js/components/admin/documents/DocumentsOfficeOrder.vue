@@ -27,12 +27,9 @@
       <thead>
         <tr>
           <th>Document No</th>
-          <th>From Date</th>
-          <th>To Date</th>
           <th>Subject</th>
           <th>Description</th>
           <th>Date Issued</th>
-          <th>Employee Names</th>
         </tr>
       </thead>
       <tbody>
@@ -43,12 +40,9 @@
           class="clickable-row"
         >
           <td>{{ document.document_no }}</td>
-          <td>{{ document.from_date }}</td>
-          <td>{{ document.to_date }}</td>
           <td>{{ document.subject }}</td>
           <td>{{ document.description }}</td>
           <td>{{ document.date_issued }}</td>
-          <td>{{ document.employee_names ? document.employee_names.join(', ') : 'N/A' }}</td>
         </tr>
       </tbody>
     </table>
@@ -216,6 +210,13 @@ h2 {
 .document-table th {
   background-color: #f1f1f1;
   font-weight: bold;
+  white-space: nowrap;
+}
+.document-table th:nth-child(2),
+.document-table th:nth-child(3),
+.document-table td:nth-child(2),
+.document-table td:nth-child(3) {
+  width: 450px; /* Set a fixed width for both Subject and Description */
 }
 
 .document-table tr:hover {
