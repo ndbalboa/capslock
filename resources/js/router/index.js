@@ -15,7 +15,6 @@ import DocumentsOfficeOrder from '../components/admin/documents/DocumentsOfficeO
 import DocumentsSpecialOrder from '../components/admin/documents/DocumentsSpecialOrder.vue';
 import AddNewEmployee from '../components/admin/employees/AddNewEmployee.vue';
 import ListOfEmployee from '../components/admin/employees/ListOfEmployee.vue';
-import Mail from '../components/admin/Mail.vue';
 import Settings from '../components/Settings.vue';
 import UserProfile from '../components/user/UserProfile.vue';
 import CreateUserAccount from '../components/admin/employees/CreateUserAccount.vue';
@@ -31,6 +30,9 @@ import UserTravelOrder from '../components/user/UserTravelOrder.vue';
 import UserOfficeOrder from '../components/user/UserOfficeOrder.vue';
 import UserSpecialOrder from '../components/user/UserSpecialOrder.vue';
 import UserDocumentDetails from '../components/user/UserDocumentDetails.vue';
+import MailList from '../components/admin/Mails/MailList.vue';
+import NewMail from '../components/admin/Mails/NewMail.vue';
+
 
 import SecPageAutoFill from '../components/secretary/SecPageAutoFill.vue';
 import SecPageAddNewEmployee from '../components/secretary/SecPageAddNewEmployee.vue';
@@ -96,8 +98,12 @@ const routes = [
       { path: 'officeOrderReports', name: 'GenerateOfficeReports', component: GenerateOfficeReports},
       { path: 'generateTravelReports', name: 'GenerateTravelReports', component: GenerateTravelReports},
       { path: 'generateSpecialReports', name: 'GenerateSpecialReports', component: GenerateSpecialReports},
-      { path: 'mail', component: Mail },
       { path: 'settings', component: Settings },
+      { path: 'mail/list', component: MailList },
+      { path: 'mail/new', component: NewMail },
+
+
+
     ],
   },
 
@@ -127,7 +133,6 @@ const routes = [
       { path: 'employee/:id', name: 'SecPageEmployeeInformation', component: SecPageEmployeeInformation },
       { path: 'secretary/employee/:id', name: 'SecPageEmployeeDetails', component: SecPageEmployeeDetails },
       { path: 'employees/:id/documents', name: 'SecPageEmployeeDocuments', component: SecPageEmployeeDocuments, props: true },
-      { path: 'mail', component: Mail },
       
     ],
   },
@@ -150,7 +155,6 @@ const routes = [
       { path: 'documents/office-order', component: UserOfficeOrder },
       { path: 'documents/special-order', component: UserSpecialOrder },
       { path: 'user-profile', component: UserProfile }, // User profile view and edit
-      { path: 'mail', component: Mail },
       { path: 'settings/change-credentials', component: ChangeCredentials }, // Change credentials option
     ],
   },

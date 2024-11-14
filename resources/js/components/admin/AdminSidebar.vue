@@ -21,12 +21,14 @@
           <i class="bi bi-search me-2"></i> Search Document
         </router-link>
       </li>
+
       <li class="nav-item" @click.prevent="toggleDocumentsSubMenu">
         <a class="nav-link d-flex align-items-center">
           <i class="bi bi-folder2-open me-2"></i>
           <span>Documents</span>
           <i :class="['bi', isDocumentsSubMenuOpen ? 'bi-caret-down-fill' : 'bi-caret-left-fill', 'ms-auto']"></i>
         </a>
+
         <transition name="slide-fade">
           <ul v-show="isDocumentsSubMenuOpen" class="nav flex-column ms-3 submenu">
             <li class="nav-item">
@@ -39,6 +41,7 @@
                 <i class="bi bi-file-earmark-text me-2"></i> Office Order
               </router-link>
             </li>
+            
             <li class="nav-item">
               <router-link class="nav-link" to="/admin-dashboard/documents/special-order">
                 <i class="bi bi-file-earmark-text me-2"></i> Special Order
@@ -88,6 +91,7 @@
           </ul>
         </transition>
       </li>
+
       <li class="nav-item" @click.prevent="toggleEmployeesSubMenu">
         <a class="nav-link d-flex align-items-center">
           <i class="bi bi-people-fill me-2"></i>
@@ -114,11 +118,37 @@
           </ul>
         </transition>
       </li>
-      <li class="nav-item">
-        <router-link class="nav-link" to="/admin-dashboard/mail">
-          <i class="bi bi-envelope-fill me-2"></i> Mail
-        </router-link>
-      </li>
+
+
+
+
+
+<li class="nav-item" @click.prevent="toggleMailsSubMenu">
+  <a class="nav-link d-flex align-items-center">
+    <i class="bi bi-folder2-open me-2"></i>
+    <span>Mails</span>
+    <i :class="['bi', isMailsSubMenuOpen ? 'bi-caret-down-fill' : 'bi-caret-left-fill', 'ms-auto']"></i>
+  </a>
+
+<transition name="slide-fade">
+  <ul v-show="isMailsSubMenuOpen" class="nav flex-column ms-3 submenu">
+    <li class="nav-item">
+      <router-link class="nav-link" to="/admin-dashboard/mail/new">
+        <i class="bi bi-file-earmark-text me-2"></i> Record Mail
+      </router-link>
+    </li>
+    <li class="nav-item">
+      <router-link class="nav-link" to="/admin-dashboard/mail/list">
+        <i class="bi bi-file-earmark-text me-2"></i> Mails List 
+      </router-link>
+    </li>
+  </ul>
+</transition>
+</li>
+
+
+      
+      
       <li class="nav-item" @click.prevent="toggleReportsSubMenu">
         <a class="nav-link d-flex align-items-center">
           <i class="bi bi-file-earmark-bar-graph-fill"></i>
@@ -129,7 +159,7 @@
           <ul v-show="isReportsSubMenuOpen" class="nav flex-column ms-3 submenu">
             <li class="nav-item">
               <router-link class="nav-link" to="/admin-dashboard/generateReports">
-               Generate Report
+               Generated Report
               </router-link>
             </li>
             <li class="nav-item">
@@ -206,6 +236,7 @@ export default {
       isEmployeesSubMenuOpen: false,
       isReportsSubMenuOpen:false,
       isSettingsSubMenuOpen: false,
+      isMailsSubMenuOpen:false,
     };
   },
   methods: {
@@ -217,6 +248,9 @@ export default {
     },
     toggleReportsSubMenu() {
       this.isReportsSubMenuOpen = !this.isReportsSubMenuOpen;
+    },
+    toggleMailsSubMenu() {
+      this.isMailsSubMenuOpen = !this.isMailsSubMenuOpen;
     },
     toggleSettingsSubMenu() {
       this.isSettingsSubMenuOpen = !this.isSettingsSubMenuOpen;

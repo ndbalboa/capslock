@@ -15,6 +15,14 @@
               <option value="" disabled>Select Document Type</option>
               <option value="travel_order">Travel Order</option>
               <option value="office_order">Office Order</option>
+              <option value="office_order">Special Order</option>
+              <option value="office_order">DBM</option>
+              <option value="office_order">Notice of Meetings</option>
+              <option value="office_order">COA Circular</option>
+              <option value="office_order">CHED Circular</option>
+
+
+
               <option value="other">Other</option>
             </select>
           </div>
