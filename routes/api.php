@@ -24,7 +24,7 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::get('/employees/no-user-or-deleted', [EmployeeController::class, 'getDeactivatedEmployees']);
     Route::post('users/{employeeId}/activate', [UserController::class, 'activateUser']);
     Route::delete('/employees/{id}', [EmployeeController::class, 'destroy']);
-    Route::get('/employees', [EmployeeController::class, 'index']);
+    Route::get('/employees/list', [EmployeeController::class, 'index']);
     Route::post('/employees', [EmployeeController::class, 'store']);
     Route::get('employees/{id}', [EmployeeController::class, 'show']);
     Route::delete('/employees/{id}', [EmployeeController::class, 'destroy'])->name('employees.destroy'); 
@@ -52,11 +52,18 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::post('/upload-document', [DocumentController::class, 'uploadDocument']);
     Route::get('/reports/generate', [ReportController::class, 'generateReport']);
     Route::get('/reports', [ReportController::class, 'index']);
-    Route::post('/generate-report', [ReportController::class, 'generateDocumentReport']);
     Route::get('/travel-orders', [ReportController::class, 'generateTravelOrderReport']);
-    Route::get('/listreport', [ReportController::class, 'listReports']);
-    Route::delete('/deletereport', [ReportController::class, 'deleteReport']);
+    Route::get('/listreport', [ReportsController::class, 'listReports']);
+    Route::delete('/deletereport', [ReportsController::class, 'deleteReport']);
     Route::get('/employees', [ReportController::class, 'employeename']);
+    Route::post('/generate-report', [ReportController::class, 'generatePDFReport']);
+    Route::get('/generated-reports', [ReportController::class, 'fetchGeneratedReports']);
+    Route::get('documentsbydaterange', [ReportController::class, 'getDocumentsByCreationDateRange']);
+    Route::get('/reports', [ReportController::class, 'index']);
+    Route::get('{id}/view', [ReportController::class, 'view']); // View report
+    Route::get('{id}/download', [ReportController::class, 'download']); // Download report
+    Route::delete('/reports/{id}', [ReportController::class, 'destroy']); // Delete report
+
 
 
 });

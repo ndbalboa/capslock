@@ -48,7 +48,7 @@ import SecPageEmployeeDocuments from '../components/secretary/SecPageEmployeeDoc
 import SecPageEmployeeInformation from '../components/secretary/SecPageEmployeeInformation.vue';
 import SecPageListOfEmployee from '../components/secretary/SecPageListOfEmployee.vue';
 import SecPageUploadDocument from '../components/secretary/SecPageUploadDocument.vue';
-import GenerateReports from '../components/admin/reports/GenerateReports.vue';
+import GeneratedReports from '../components/admin/reports/GeneratedReports.vue';
 import GenerateOfficeReports from '../components/admin/reports/GenerateOfficeReports.vue';
 import TravelOrderDocDetails from '../components/admin/documents/TravelOrderDocDetails.vue';
 import GenerateTravelReports from '../components/admin/reports/GenerateTravelReports.vue';
@@ -94,7 +94,7 @@ const routes = [
       { path: 'createuser', component: CreateUserAccount },
       { path: 'admin/employee/:id', name: 'EmployeeDetails', component: EmployeeDetails },
       { path: 'employees/:id/documents', name: 'EmployeeDocuments', component: EmployeeDocuments, props: true },
-      { path: 'generateReports', name: 'GenerateReports', component: GenerateReports},
+      { path: 'generatedReports', name: 'GeneratedReports', component: GeneratedReports},
       { path: 'officeOrderReports', name: 'GenerateOfficeReports', component: GenerateOfficeReports},
       { path: 'generateTravelReports', name: 'GenerateTravelReports', component: GenerateTravelReports},
       { path: 'generateSpecialReports', name: 'GenerateSpecialReports', component: GenerateSpecialReports},
@@ -136,6 +136,21 @@ const routes = [
       
     ],
   },
+    // Secretary Dashboard routes
+    {
+      path: '/department-dashboard',
+      component: SecretaryLayout,
+      beforeEnter: (to, from, next) => {
+        if (!isAuthenticated() || getUserRole() !== 'department') {
+          return next('/');
+        }
+        next();
+      },
+      children: [
+
+        
+      ],
+    },
 
   // User Dashboard routes
   {

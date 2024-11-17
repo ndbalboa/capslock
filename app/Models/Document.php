@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Employee;
 
 class Document extends Model
 {
@@ -60,6 +61,17 @@ class Document extends Model
     public function scopeForUser($query, $user)
     {
         return $query->whereJsonContains('employee_names', $user->employee_id); // Adjust based on how employee_names is structured
+    }
+    public function scopeFilterByEmployee($query, $employeeId)
+    {
+        if ($employeeId) {
+            $employee = Employee::find($employeeId);
+            if ($employee) {
+                $fullName = "{$employee->lastName}, {$employee->firstName}";
+                return $query->whereJsonContains('employee_names', $fullName);
+            }
+        }
+        return $query;
     }
 
     

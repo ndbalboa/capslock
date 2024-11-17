@@ -4,17 +4,27 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\Document;
+use App\Models\Employee;
 
 class GeneratedReport extends Model
 {
     use HasFactory;
 
+    protected $table = 'generated_reports';  // Define table name if it doesn't follow the convention
+
     protected $fillable = [
-        'report_name', 'file_path', 'report_type', 'start_date', 'end_date'
+        'fileName',
+        'filePath',
+        'description',
     ];
 
-    protected $casts = [
-        'start_date' => 'date',
-        'end_date' => 'date',
-    ];
+    public $timestamps = true;  
+
+    // Assuming filePath is the path to the report file stored in storage
+    public function getFilePathAttribute($value)
+    {
+        return $value ? asset('storage/' . $value) : null;
+    }
 }

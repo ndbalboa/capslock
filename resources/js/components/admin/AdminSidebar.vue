@@ -158,7 +158,7 @@
         <transition name="slide-fade">
           <ul v-show="isReportsSubMenuOpen" class="nav flex-column ms-3 submenu">
             <li class="nav-item">
-              <router-link class="nav-link" to="/admin-dashboard/generateReports">
+              <router-link class="nav-link" to="/admin-dashboard/generatedReports">
                Generated Report
               </router-link>
             </li>

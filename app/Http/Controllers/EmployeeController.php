@@ -79,46 +79,22 @@ class EmployeeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Validate general employee data
-        $request->validate([
-            'lastName' => 'required|string|max:255',
-            'firstName' => 'required|string|max:255',
-            'emailAddress' => 'required|email|unique:employees,email,' . $id,
-            'profileImage' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048' // Validate image type
-        ]);
+        try {
+            $employee = Employee::findOrFail($id);
+            $employee->update($request->all()); // Update employee with new data
     
-        // Fetch employee
-        $employee = Employee::findOrFail($id);
-    
-        // Update employee fields
-        $employee->lastName = $request->lastName;
-        $employee->firstName = $request->firstName;
-        $employee->email_address = $request->emailAddress;
-        // Update additional fields as needed...
-    
-        // Handle profile image upload
-        if ($request->hasFile('profileImage')) {
-            // Delete old profile image if it exists
-            if ($employee->profile_image && \Storage::disk('public')->exists($employee->profile_image)) {
-                \Storage::disk('public')->delete($employee->profile_image);
+            // Handle profile image upload if any
+            if ($request->hasFile('profileImage')) {
+                $imagePath = $request->file('profileImage')->store('profile_images', 'public');
+                $employee->profile_image = $imagePath;
+                $employee->save();
             }
     
-            // Store new image and save path
-            $path = $request->file('profileImage')->store('profile_images', 'public');
-            $employee->profile_image = $path;
+            return response()->json(['employee' => $employee], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-    
-        // Save employee data
-        $employee->save();
-    
-        return response()->json([
-            'success' => true,
-            'message' => 'Employee updated successfully',
-            'employee' => $employee
-        ]);
-    }
-    
-
+    }    
     /**
      * Register unregistered employee and associate with document.
      *
