@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Document;
 use App\Models\Employee;
+use App\Models\DocumentType;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -70,37 +71,47 @@ class DocumentController extends Controller
             'venue' => 'nullable|string',
             'destination' => 'nullable|string',
             'description' => 'nullable|string',
-            'document_type' => 'required|string',
+            'document_type' => 'required|string', // Document type as a string
             'file_path' => 'required|string',
             'employee_names' => 'nullable|array', // Employee names as an array
         ]);
-
+    
         try {
+            // Retrieve the document type based on the string passed
+            $documentType = DocumentType::where('document_type', $validatedData['document_type'])->first();
+    
+            // If the document type doesn't exist, return an error
+            if (!$documentType) {
+                return response()->json(['error' => 'Invalid document type.'], 400);
+            }
+    
+            // Merge the document_type_id into the validated data
+            $validatedData['document_type_id'] = $documentType->id;
+    
             // Save or update the document
             $document = Document::updateOrCreate(
                 ['document_no' => $validatedData['document_no']],
-                $validatedData
+                $validatedData // This now includes the document_type_id
             );
-
+    
             // Save employee names directly in the document's employee_names field
             if ($request->has('employee_names')) {
                 $document->employee_names = $validatedData['employee_names'];
                 $document->save();
             }
-
+    
             // Send feedback to Flask API
             Http::post('http://localhost:5000/api/admin/feedback', $validatedData);
-
+    
             return response()->json([
                 'message' => 'Document saved successfully.',
                 'document' => $document,
             ]);
-            
-
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to save the document: ' . $e->getMessage()], 500);
         }
     }
+    
     private function attachEmployeesToDocument(array $employeeNames, Document $document)
     {
         foreach ($employeeNames as $employeeName) {
@@ -226,22 +237,28 @@ class DocumentController extends Controller
         // Return the documents as a JSON response
         return response()->json($documents);
     }
-
     public function search(Request $request)
     {
         // Get the search query from the request
         $searchQuery = $request->input('searchQuery');
         
-        // Perform a search on documents
-        $documents = Document::where('document_no', 'LIKE', "%$searchQuery%")
+        // Perform a search on documents, including the document type relationship
+        $documents = Document::with('documentType')
+            ->where('document_no', 'LIKE', "%$searchQuery%")
             ->orWhere('series_no', 'LIKE', "%$searchQuery%")
             ->orWhere('subject', 'LIKE', "%$searchQuery%")
             ->orWhere('description', 'LIKE', "%$searchQuery%")
             ->orWhereJsonContains('employee_names', $searchQuery)
             ->get();
-        
+    
+        // Append the actual document type to each document
+        $documents->each(function ($document) {
+            $document->actual_document_type = $document->documentType->document_type ?? 'Unknown';
+        });
+    
         return response()->json($documents);
     }
+    
 
     // Advanced search function
     public function advancedSearch(Request $request)
@@ -292,17 +309,22 @@ class DocumentController extends Controller
         return response()->json($documents);
     }
     // admin interface for getting documents by type
-    public function getDocumentsByType($type)
+    public function getDocumentsByType($documentTypeId)
     {
-        // Fetch all documents with the provided document type
-        $documents = Document::where('document_type', $type)->get();
-
-        if ($documents->isEmpty()) {
-            return response()->json(['message' => 'No documents found for this type.'], 404);
-        }
-
+        $documents = Document::where('document_type_id', $documentTypeId)->get();
         return response()->json($documents);
     }
+    public function getDocumentDetails($documentId)
+    {
+        $document = Document::with('documentType')->findOrFail($documentId);
+    
+        // Add the actual document type to the response
+        $document->actual_document_type = $document->documentType->document_type ?? 'Unknown';
+    
+        return response()->json($document);
+    }
+    
+    
 
     public function getDocumentsForUser($userId)
     {
@@ -328,9 +350,10 @@ class DocumentController extends Controller
  {
      $user = Auth::user(); // Get the authenticated user
      $searchQuery = $request->input('searchQuery');
-
-     // Search documents associated with the user
-     $documents = Document::whereJsonContains('employee_names', $user->firstName . ' ' . $user->lastName)
+ 
+     // Search documents associated with the user, including the document type
+     $documents = Document::with('documentType')
+         ->whereJsonContains('employee_names', $user->firstName . ' ' . $user->lastName)
          ->where(function ($query) use ($searchQuery) {
              if ($searchQuery) {
                  $query->where('document_no', 'like', '%' . $searchQuery . '%')
@@ -338,9 +361,15 @@ class DocumentController extends Controller
              }
          })
          ->get();
-
+ 
+     // Append the actual document type to each document
+     $documents->each(function ($document) {
+         $document->actual_document_type = $document->documentType->document_type ?? 'Unknown';
+     });
+ 
      return response()->json($documents);
  }
+ 
 
  // For advanced search by the user
  public function userAdvancedSearch(Request $request)
@@ -389,20 +418,30 @@ class DocumentController extends Controller
 
      return response()->json($documents);
  }
+
     // for user interface fetching documents by type
     public function getUserDocumentsByType($type = null)
     {
         try {
-            $user = Auth::user();
+            $user = Auth::user();  // Get the authenticated user
 
             // Fetch documents by type if provided, otherwise fetch all types
-            $documents = $type 
+            $documentsQuery = $type 
                 ? Document::forUser($user, $type) 
                 : Document::forUser($user);
 
+            // Eager load the documentType to get the actual document type
+            $documents = $documentsQuery->with('documentType')->get();
+
+            // Check if documents are found
             if ($documents->isEmpty()) {
                 return response()->json(['message' => 'No documents found for this user'], 404);
             }
+
+            // Add actual document type to each document
+            $documents->each(function ($document) {
+                $document->actual_document_type = $document->documentType->document_type ?? 'Unknown';
+            });
 
             return response()->json($documents, 200);
 
@@ -411,21 +450,26 @@ class DocumentController extends Controller
             return response()->json(['error' => 'An error occurred while fetching documents'], 500);
         }
     }
+    
 
     //for document counting on admin dashboard
     public function getDocumentCounts()
     {
+        // Get the total number of documents
         $totalDocuments = Document::count();
-
-        $countsByType = Document::select('document_type', DB::raw('count(*) as count'))
-            ->groupBy('document_type')
+    
+        // Get the count of documents grouped by document type
+        $countsByType = Document::select('document_types.document_type', DB::raw('count(*) as count'))
+            ->join('document_types', 'documents.document_type_id', '=', 'document_types.id') // Join with document_types table
+            ->groupBy('document_types.document_type')  // Group by the document_type from the document_types table
             ->get();
-
+    
         return response()->json([
-            'total' => $totalDocuments,
-            'counts' => $countsByType,
+            'total' => $totalDocuments,   // Total count of all documents
+            'counts' => $countsByType,    // Count grouped by document type
         ]);
     }
+    
     public function getUserDocumentCounts(Request $request)
     {
         $user = Auth::user(); // Get the authenticated user
@@ -477,5 +521,45 @@ class DocumentController extends Controller
             return response()->json(['message' => 'Failed to delete document.'], 500);
         }
     }
+//for department
+public function getDocumentsByLoggedInDepartment()
+{
+    try {
+        // Get the logged-in user
+        $user = Auth::user();
+
+        // Ensure the user has a department field
+        $department = $user->department;
+
+        if (!$department) {
+            return response()->json(['error' => 'No department found for this user'], 400);
+        }
+
+        // Fetch employees in the department
+        $employees = Employee::where('department', $department)->get();
+
+        if ($employees->isEmpty()) {
+            return response()->json(['error' => 'No employees found in this department'], 400);
+        }
+
+        // Fetch all documents associated with these employees based on firstName and lastName
+        $documents = Document::where(function ($query) use ($employees) {
+            foreach ($employees as $employee) {
+                $query->orWhereJsonContains('employee_names', [
+                    'firstName' => $employee->firstName,
+                    'lastName' => $employee->lastName
+                ]);
+            }
+        })->get();
+
+        return response()->json($documents);
+    } catch (\Exception $e) {
+        // Log the error and return a 500 response
+        \Log::error('Error fetching documents for department: ' . $e->getMessage());
+        return response()->json(['error' => 'Internal Server Error'], 500);
+    }
+}
+
+
     
 }

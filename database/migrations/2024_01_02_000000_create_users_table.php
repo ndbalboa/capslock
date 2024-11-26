@@ -17,12 +17,13 @@ return new class extends Migration
             $table->string('username')->unique();
             $table->string('lastName');
             $table->string('firstName');
+            $table->string('department')->nullable();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
-            $table->enum('role', ['user', 'admin', 'secretary'])->default('user');
+            $table->enum('role', ['user', 'admin', 'secretary','department'])->default('user');
             $table->enum('status', ['active', 'inactive', 'deactivated'])->default('active');
 
             $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');

@@ -10,6 +10,7 @@ class CreateDocumentsTable extends Migration
     {
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('document_type_id')->constrained('document_types')->onDelete('cascade');  // Foreign key referencing 'document_types' table
             $table->string('document_no')->nullable();
             $table->string('series_no')->nullable();
             $table->date('date_issued')->nullable();
@@ -19,7 +20,8 @@ class CreateDocumentsTable extends Migration
             $table->string('destination')->nullable();
             $table->string('subject')->nullable();
             $table->text('description')->nullable();
-            $table->string('document_type');
+            $table->json('employee_names')->nullable();
+            $table->json('student_names')->nullable();
             $table->string('file_path');
             $table->timestamps();
         });

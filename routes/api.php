@@ -9,20 +9,47 @@ use App\Http\Controllers\EmployeeProfileController;
 use App\Http\Controllers\ScanController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\MailController;
+use App\Http\Controllers\LogController;
+use App\Http\Controllers\UploadDocumentController;
+use App\Http\Controllers\DocumentTypeController;
+use App\Http\Controllers\DepartmentController;
 
 
 // Authentication Routes
 Route::post('/login', [LoginController::class, 'login']);
+Route::post('verify-2fa', [LoginController::class, 'verify']);
 Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth:sanctum');
 Route::get('/recent-activities', [LoginController::class, 'getRecentActivities']);
 Route::get('/documents/counts', [DocumentController::class, 'getDocumentCounts']);
-Route::get('/user/documents/counts', [DocumentController::class, 'getUserDocumentCounts']);
+Route::get('/mails/count', [MailController::class, 'getMailCounts']);
+Route::get('/logs/recent-activities', [LogController::class, 'getRecentActivities']);
 
 // Employee Routes (Admin only)
 Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
+    Route::get('/documents/type/{typeName}', [UploadDocumentController::class, 'fetchDocumentsByType']);
+    Route::get('/documents/{documentId}', [DocumentController::class, 'getDocumentDetails']);
+
+    Route::get('/upload/document-types', [UploadDocumentController::class, 'getDocumentTypes']);
+    Route::post('/upload/documents', [UploadDocumentController::class, 'uploadDocument']);
+
+
+// API route to create a new document type
+    Route::post('/store/document-types', [DocumentTypeController::class, 'store']);
+    Route::get('/document-types', [DocumentTypeController::class, 'index']);
+    Route::put('/update/document-types/{id}', [DocumentTypeController::class, 'update']);
+    Route::delete('/delete/document-types/{id}', [DocumentTypeController::class, 'destroy']);
+
+
+// Routes for Documents
+    Route::post('/documents', [UploadDocumentController::class, 'storeDocs']);
+
+    Route::get('/list/documents/{documentTypeId}', [DocumentController::class, 'getDocumentsByType']);
+
     Route::delete('/employees/{employeeId}/deactivate', [EmployeeController::class, 'deactivateEmployee']);
     Route::get('/employees/no-user-or-deleted', [EmployeeController::class, 'getDeactivatedEmployees']);
     Route::post('users/{employeeId}/activate', [UserController::class, 'activateUser']);
+    Route::post('/departments', [UserController::class, 'storeDepartment']);
     Route::delete('/employees/{id}', [EmployeeController::class, 'destroy']);
     Route::get('/employees/list', [EmployeeController::class, 'index']);
     Route::post('/employees', [EmployeeController::class, 'store']);
@@ -65,6 +92,14 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::delete('/reports/{id}', [ReportController::class, 'destroy']); // Delete report
 
 
+    Route::post('/mails', [MailController::class, 'store']);
+    Route::get('/getmails', [MailController::class, 'index']);
+    Route::get('/mails/{id}', [MailController::class, 'show']); // Get a single mail by ID
+    Route::put('/mails/{id}', [MailController::class, 'update']); // Update a mail
+    Route::delete('/mails/{id}', [MailController::class, 'destroy']); // Delete a mail
+    Route::get('/employeeselect', [MailController::class, 'getEmployees']); // Fetch employees
+
+
 
 });
 
@@ -82,6 +117,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/documents', [DocumentController::class, 'getAllDocuments']);
     Route::post('/user/search', [DocumentController::class, 'userSearch']);
     Route::post('/user/advanced-search', [DocumentController::class, 'userAdvancedSearch']); 
-    Route::get('/user/documents/{type?}', [DocumentController::class, 'getUserDocumentsByType']);
+    Route::get('/documents/user/{type?}', [DocumentController::class, 'getUserDocumentsByType']);
+    // api.php
+    Route::get('/department/document-types', [DepartmentController::class, 'index']);
+    Route::get('/department/documents', [DepartmentController::class, 'getDocumentsByDepartment']);
+
+    
 });
+Route::middleware('auth:api')->get('/user', function (Request $request) {
+    return $request->user();
+});
+
+// Route to fetch documents by logged-in user's department
+Route::get('/documents/department/logged-in', [DocumentController::class, 'getDocumentsByLoggedInDepartment']);
 

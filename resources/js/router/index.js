@@ -54,6 +54,13 @@ import TravelOrderDocDetails from '../components/admin/documents/TravelOrderDocD
 import GenerateTravelReports from '../components/admin/reports/GenerateTravelReports.vue';
 import GenerateSpecialReports from '../components/admin/reports/GenerateSpecialReports.vue';
 
+import DepartmentDashboard from '../components/department/DepartmentDashboard.vue';
+import DepartmentLayout from '../components/department/DepartmentLayout.vue';
+import CreateDepartmentAccount from '../components/admin/employees/CreateDepartmentAccount.vue';
+import DepartmentTravel from '../components/department/DepartmentTravel.vue';
+import AddDocumentType from '../components/admin/documents/AddDocumentType.vue';
+import DepartmentUploadDocument from '../components/department/DepartmentUploadDocument.vue';
+
 function isAuthenticated() {
   return !!localStorage.getItem('token');
 }
@@ -85,6 +92,7 @@ const routes = [
       { path: 'documents/travel-order', component: DocumentsTravelOrder },
       { path: 'documents/office-order', component: DocumentsOfficeOrder },
       { path: 'documents/special-order', component: DocumentsSpecialOrder },
+      { path: 'adddocumenttype', component: AddDocumentType},
       { path: 'documents/:id', name: 'DocumentDetails', component: DocumentDetails},
       { path: 'documents/:id', name: 'TravelOrderDocDetails', component: TravelOrderDocDetails},
       { path: 'employee/add', component: AddNewEmployee },
@@ -92,6 +100,7 @@ const routes = [
       { path: 'employee/deactivated', component: DeactivatedEmployees },
       { path: 'employee/:id', name: 'EmployeeInformation', component: EmployeeInformation },
       { path: 'createuser', component: CreateUserAccount },
+      { path: 'createdepartment', component: CreateDepartmentAccount },
       { path: 'admin/employee/:id', name: 'EmployeeDetails', component: EmployeeDetails },
       { path: 'employees/:id/documents', name: 'EmployeeDocuments', component: EmployeeDocuments, props: true },
       { path: 'generatedReports', name: 'GeneratedReports', component: GeneratedReports},
@@ -139,7 +148,7 @@ const routes = [
     // Secretary Dashboard routes
     {
       path: '/department-dashboard',
-      component: SecretaryLayout,
+      component: DepartmentLayout,
       beforeEnter: (to, from, next) => {
         if (!isAuthenticated() || getUserRole() !== 'department') {
           return next('/');
@@ -147,7 +156,9 @@ const routes = [
         next();
       },
       children: [
-
+        { path: '', component: DepartmentDashboard },
+        { path: 'department/documents/travel-order', component: DepartmentTravel },
+        { path: 'upload-document', component: DepartmentUploadDocument },
         
       ],
     },

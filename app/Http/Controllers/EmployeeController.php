@@ -195,7 +195,7 @@ class EmployeeController extends Controller
             'residential_zipcode' => 'nullable|string|max:20',
         ];
     }
-
+//true function for saving on add new employee
     /**
      * Get validated data from the request.
      *
@@ -234,6 +234,7 @@ class EmployeeController extends Controller
             'residential_province',
             'residential_country',
             'residential_zipcode',
+            'department'
         ]);
     }
 

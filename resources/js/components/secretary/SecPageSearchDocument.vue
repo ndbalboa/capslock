@@ -85,7 +85,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="document in searchResults" :key="document.id" @click="goToDocumentDetails(document.id)" style="cursor: pointer;">
+          <tr v-for="document in searchResults" :key="document.id" @click="goToDocumentDetails(document.id, document.document_type)" style="cursor: pointer;">
             <td>{{ document.document_no }}</td>
             <td>{{ document.subject }}</td>
             <td>{{ document.date_issued }}</td>
@@ -94,7 +94,7 @@
                 <li v-for="employee in document.employee_names" :key="employee">{{ employee }}</li>
               </ul>
             </td>
-            <td>{{ document.document_type }}</td>
+            <td>{{ document && document.document_type ? document.document_type.document_type : 'Travel Order'  }}</td>
           </tr>
         </tbody>
       </table>
@@ -150,10 +150,12 @@ export default {
           console.error('Error performing advanced search:', error);
         });
     },
-    goToDocumentDetails(documentId) {
-      this.$router.push({ name: 'DocumentDetails', params: { id: documentId } });
+    goToDocumentDetails(documentId, documentType) {
+      // Default route for other document types
+      this.$router.push({ name: 'SecPageDocumentDetails', params: { id: documentId } });
     }
   }
+  
 };
 </script>
 

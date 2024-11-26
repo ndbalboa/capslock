@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Document;
+use App\Models\DocumentType;
 use App\Models\Employee;
 use App\Models\GeneratedReport;
 use Carbon\Carbon;
@@ -15,27 +16,32 @@ class ReportController extends Controller
 {
     public function indexs(Request $request)
     {
-        $query = Document::where('document_type', 'travel order');
-
+        // Create a base query for documents, join with the document_types table
+        $query = Document::join('document_types', 'documents.document_type_id', '=', 'document_types.id')
+            ->where('document_types.document_type', 'Travel Order'); // Filter by document type name (e.g., Travel Order)
+    
+        // Filter by date range if provided
         if ($request->startDate && $request->endDate) {
             $query->whereBetween('date_issued', [
                 Carbon::parse($request->startDate),
                 Carbon::parse($request->endDate)
             ]);
         }
-
+    
+        // Filter by employee if provided
         if ($request->employee) {
             $employee = Employee::find($request->employee);
             if ($employee) {
                 $query->whereJsonContains('employee_names', $employee->full_name);
             }
         }
-
-        $travelOrders = $query->get();
-
+    
+        // Fetch the filtered documents
+        $travelOrders = $query->select('documents.*')->get(); // Select only the document fields
+    
         return response()->json(['travelOrders' => $travelOrders]);
     }
-
+    
     public function getEmployees()
     {
         $employees = Employee::all(['id', 'firstName', 'lastName']);
@@ -49,77 +55,83 @@ class ReportController extends Controller
         ]);
     }
     //working
-public function generatePDFReport(Request $request)
-{
-    // Validate the date range input and document type
-    $request->validate([
-        'upload_from_date' => 'required|date',
-        'upload_to_date' => 'required|date',
-        'document_type' => 'required|string|in:Travel Order,Office Order,Special Order', // Allow specific document types
-    ]);
-
-    // Fetch documents based on date range and document type
-    $documents = Document::where('document_type', $request->document_type)
-        ->whereBetween('created_at', [
-            $request->upload_from_date,
-            $request->upload_to_date,
-        ])->get();
-
-    // Generate the PDF file
-    $documentType = $request->document_type; // Pass this to the view
-    $generatedDate = now()->format('Y-m-d');
-    $description = $documentType . ' Report'; // Dynamic description based on document type
-    $pdf = PDF::loadView('pdf.document_report', compact('documents', 'generatedDate', 'description', 'documentType'));
-
-    // Set the file name and path for saving the PDF
-    $fileName = strtolower(str_replace(' ', '_', $documentType)) . '_report_' . $generatedDate . '.pdf';
-    $filePath = 'pdf_reports/' . $fileName;
-
-    // Save the generated PDF to the storage folder
-    $pdf->save(storage_path('app/public/' . $filePath));
-
-    // Save the report details in the generated_reports table
-    GeneratedReport::create([
-        'fileName' => $fileName,
-        'filePath' => $filePath,
-        'description' => $documentType . ' report generated from ' . $request->upload_from_date . ' to ' . $request->upload_to_date,
-    ]);
-
-    // Return the response with the generated PDF file path or a success message
-    return response()->json([
-        'message' => $documentType . ' report generated and saved successfully!',
-        'file_path' => asset('storage/' . $filePath),
-    ]);
-}
-
-    
-//working 
-    public function getDocumentsByCreationDateRange(Request $request)
+    public function generatePDFReport(Request $request)
     {
-        // Validate the date range parameters (upload_from_date and upload_to_date)
+        // Validate the date range input and document type
         $request->validate([
             'upload_from_date' => 'required|date',
             'upload_to_date' => 'required|date',
-            'document_type' => 'nullable|string|in:Travel Order,Office Order,Special Order', // Add validation for document_type
+            'document_type' => 'required|string|in:Travel Order,Office Order,Special Order', // Allow specific document types
         ]);
     
-        // Start building the query to fetch documents
-        $query = Document::whereBetween('created_at', [
+        // Fetch documents based on date range and document type (joined with document_types)
+        $documents = Document::join('document_types', 'documents.document_type_id', '=', 'document_types.id')
+            ->where('document_types.document_type', $request->document_type) // Filter by document type name
+            ->whereBetween('documents.created_at', [
+                $request->upload_from_date,
+                $request->upload_to_date,
+            ])
+            ->get();
+    
+        // Generate the PDF file
+        $documentType = $request->document_type; // Pass this to the view
+        $generatedDate = now()->format('Y-m-d');
+        $description = $documentType . ' Report'; // Dynamic description based on document type
+        $pdf = PDF::loadView('pdf.document_report', compact('documents', 'generatedDate', 'description', 'documentType'));
+    
+        // Set the file name and path for saving the PDF
+        $fileName = strtolower(str_replace(' ', '_', $documentType)) . '_report_' . $generatedDate . '.pdf';
+        $filePath = 'pdf_reports/' . $fileName;
+    
+        // Save the generated PDF to the storage folder
+        $pdf->save(storage_path('app/public/' . $filePath));
+    
+        // Save the report details in the generated_reports table
+        GeneratedReport::create([
+            'fileName' => $fileName,
+            'filePath' => $filePath,
+            'description' => $documentType . ' report generated from ' . $request->upload_from_date . ' to ' . $request->upload_to_date,
+        ]);
+    
+        // Return the response with the generated PDF file path or a success message
+        return response()->json([
+            'message' => $documentType . ' report generated and saved successfully!',
+            'file_path' => asset('storage/' . $filePath),
+        ]);
+    }
+    
+
+    
+//working 
+public function getDocumentsByCreationDateRange(Request $request)
+{
+    // Validate the date range parameters (upload_from_date and upload_to_date)
+    $request->validate([
+        'upload_from_date' => 'required|date',
+        'upload_to_date' => 'required|date',
+        'document_type' => 'nullable|string|in:Travel Order,Office Order,Special Order', // Add validation for document_type
+    ]);
+
+    // Start building the query to fetch documents
+    $query = Document::join('document_types', 'documents.document_type_id', '=', 'document_types.id')
+        ->whereBetween('documents.created_at', [
             $request->upload_from_date,
             $request->upload_to_date,
         ]);
-    
-        // If document_type is provided, filter by it
-        if ($request->has('document_type')) {
-            $query->where('document_type', $request->document_type);
-        }
-    
-        // Execute the query and fetch the documents
-        $documents = $query->get();
-    
-        // Return the documents as JSON
-        return response()->json(['documents' => $documents]);
+
+    // If document_type is provided, filter by document_type_id
+    if ($request->has('document_type')) {
+        $documentType = $request->document_type;
+        $query->where('document_types.document_type', $documentType);
     }
+
+    // Execute the query and fetch the documents
+    $documents = $query->select('documents.*')->get();
+
+    // Return the documents as JSON
+    return response()->json(['documents' => $documents]);
+}
+
     //working
     public function employeename()
     {

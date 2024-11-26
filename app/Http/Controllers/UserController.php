@@ -89,6 +89,35 @@ class UserController extends Controller
 
         return response()->json(['message' => 'User created successfully.', 'user' => $user], 201);
     }
+    // Function for creating department accounts
+    public function storeDepartment(Request $request)
+    {
+        // Validate the request data
+        $request->validate([
+            'firstName' => 'required|string|max:255',
+            'lastName' => 'required|string|max:255',
+            'department' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email',
+            'username' => 'required|string|max:255|unique:users,username',
+            'password' => 'required|string|min:8|confirmed',
+            'role' => 'required|string|in:department',
+        ]);
+
+        // Create the department account
+        $user = User::create([
+            'employee_id' => null, // No employee validation
+            'firstName' => $request->firstName,
+            'lastName' => $request->lastName,
+            'department' => $request->department,
+            'email' => $request->email,
+            'username' => $request->username,
+            'password' => Hash::make($request->password),
+            'role' => $request->role,
+            'status' => 'active', // Default status is active
+        ]);
+
+        return response()->json(['message' => 'Department user created successfully.', 'user' => $user], 201);
+    }
 
 
         /**

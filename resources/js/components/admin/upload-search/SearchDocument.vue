@@ -94,7 +94,7 @@
                 <li v-for="employee in document.employee_names" :key="employee">{{ employee }}</li>
               </ul>
             </td>
-            <td>{{ document.document_type }}</td>
+            <td>{{ document && document.document_type ? document.document_type.document_type : 'Travel Order'  }}</td>
           </tr>
         </tbody>
       </table>

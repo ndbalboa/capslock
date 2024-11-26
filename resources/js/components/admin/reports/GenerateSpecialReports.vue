@@ -21,6 +21,31 @@
                 </div>
               </div>
 
+              <!-- Employee Filter -->
+              <div class="form-row align-items-center">
+                <label class="col-md-3 col-form-label">Select Employee:</label>
+                <div class="col-md-4 mb-3">
+                  <select v-model="employee" class="form-control">
+                    <option value="">-- ALL --</option>
+                    <option v-for="emp in employees" :key="emp.id" :value="emp.id">
+                      {{ emp.name }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Rows Filter -->
+              <div class="form-row align-items-center">
+                <label class="col-md-3 col-form-label">Rows per Page:</label>
+                <div class="col-md-2 mb-3">
+                  <select v-model="rowsPerPage" class="form-control">
+                    <option v-for="rows in [10, 25, 50, 100]" :key="rows" :value="rows">
+                      {{ rows }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
               <!-- Generate Button -->
               <div class="form-row">
                 <div class="col-md-2 mb-3">
@@ -48,7 +73,7 @@
 
       <!-- Document Table -->
       <div v-if="documents.length > 0" class="col-lg-12 mt-3">
-        <h5>Travel Order Documents from {{ startDate }} to {{ endDate }}</h5>
+        <h5>Special Order Documents from {{ startDate }} to {{ endDate }}</h5>
         <table class="table table-bordered">
           <thead>
             <tr>
@@ -60,7 +85,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="document in documents" :key="document.id">
+            <tr v-for="document in paginatedDocuments" :key="document.id">
               <td>{{ document.destination }}</td>
               <td>{{ document.subject }}</td>
               <td>{{ document.from_date }} &ndash; {{ document.to_date }}</td>
@@ -89,7 +114,15 @@ export default {
       reportGenerated: false,
       reportLink: '',
       documents: [], // Stores the list of documents
+      employees: [], // Stores the list of employees
+      employee: '', // Selected employee for filtering
+      rowsPerPage: 10, // Rows per page for pagination
     };
+  },
+  computed: {
+    paginatedDocuments() {
+      return this.documents.slice(0, this.rowsPerPage);
+    },
   },
   methods: {
     // Generate report and fetch documents for the date range
@@ -128,6 +161,7 @@ export default {
             upload_from_date: this.startDate,
             upload_to_date: this.endDate,
             document_type: 'Special Order', // Filter documents by type
+            employee: this.employee, // Filter documents by employee
           },
         });
 
@@ -140,5 +174,74 @@ export default {
       }
     },
   },
+  async mounted() {
+    // Fetch employees for the dropdown when the component is mounted
+    try {
+      const response = await axios.get('/api/admin/employees');
+      this.employees = response.data.employees;
+    } catch (error) {
+      console.error('Error fetching employees:', error);
+    }
+  },
 };
 </script>
+
+<style scoped>
+.container {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.card {
+  border-radius: 10px;
+  background-color: transparent;
+}
+
+.card-body {
+  padding: 25px;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+label {
+  font-weight: bold;
+  margin-right: 10px;
+  color: rgb(21, 17, 17);
+}
+
+table th {
+  text-align: center;
+  vertical-align: middle;
+  background-color: navy; 
+  color: white;  
+  height: 40px;  
+  white-space: nowrap;
+}
+table td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+thead {
+  background-color: #343a40;
+  color: rgb(21, 17, 17);
+}
+
+button {
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+.alert-danger {
+  margin-top: 20px;
+}
+</style>

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('logs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('user_full_name');  // New column for full name
             $table->string('action')->nullable(); // e.g., 'login', 'logout', 'document_upload'
             $table->text('details')->nullable(); // Additional info like document ID, IP address, etc.
             $table->timestamps();    

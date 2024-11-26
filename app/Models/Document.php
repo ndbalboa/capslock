@@ -20,14 +20,16 @@ class Document extends Model
         'description',
         'venue',
         'destination',
-        'document_type', 
+        'document_type_id', 
         'file_path', 
         'employee_names',
+        'student_names',
         'created_at'
     ];
 
     protected $casts = [
         'employee_names' => 'array',
+
     ];
     public function scopeWithinDateRange($query, $startDate, $endDate)
     {
@@ -73,6 +75,11 @@ class Document extends Model
         }
         return $query;
     }
+    public function documentType()
+{
+    return $this->belongsTo(DocumentType::class, 'document_type_id');
+}
+
 
     
 }

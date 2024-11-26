@@ -1,5 +1,5 @@
 <template>
-  <h2 class="upload-title">Upload Document</h2>
+  <h2 class="upload-title">Scan Document</h2>
   <div class="container mt-5">
     <div class="upload-card shadow-sm">
       <form @submit.prevent="uploadFile">

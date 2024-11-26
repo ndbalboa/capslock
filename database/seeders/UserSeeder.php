@@ -13,13 +13,14 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('users')->insert([
-            [ 
+        $users = [
+            [
                 'username' => 'admin',
                 'lastName' => 'Yuji',
                 'firstName' => 'Itadori',
-                'email' => 'admin@gmail.com',
+                'email' => 'ndbalboa.30@gmail.com',
                 'password' => Hash::make('password'),
+                'department' => null,
                 'role' => 'admin',
                 'status' => 'active',
                 'created_at' => now(),
@@ -27,11 +28,12 @@ class UserSeeder extends Seeder
                 'employee_id' => null,
             ],
             [
-                'username'=> 'secretary',
+                'username' => 'secretary',
                 'lastName' => 'Balboa',
                 'firstName' => 'Nino',
                 'email' => 'secretary@gmail.com',
                 'password' => Hash::make('password'),
+                'department' => null,
                 'role' => 'secretary',
                 'status' => 'active',
                 'created_at' => now(),
@@ -44,12 +46,34 @@ class UserSeeder extends Seeder
                 'firstName' => 'Curtis',
                 'email' => 'user@gmail.com',
                 'password' => Hash::make('password'),
+                'department' => null,
                 'role' => 'user',
                 'status' => 'active',
                 'created_at' => now(),
                 'updated_at' => now(),
                 'employee_id' => null,
             ],
-        ]);
+            [
+                'username' => 'it101',
+                'lastName' => 'Cena',
+                'firstName' => 'Jhon',
+                'email' => 'department@gmail.com',
+                'password' => Hash::make('password'),
+                'department' => null,
+                'role' => 'department',
+                'status' => 'active',
+                'created_at' => now(),
+                'updated_at' => now(),
+                'employee_id' => null,
+            ],
+        ];
+
+        foreach ($users as $user) {
+            // Use updateOrInsert to prevent duplicates
+            DB::table('users')->updateOrInsert(
+                ['username' => $user['username']], // Unique constraint to check
+                $user // Values to insert or update
+            );
+        }
     }
 }

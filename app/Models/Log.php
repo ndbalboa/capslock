@@ -8,13 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class Log extends Model
 {
     use HasFactory;
-     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+
     protected $fillable = [
-        'user_id', // Add this line
-        // other fields like 'action', 'description', etc.
+        'user_id',    // ID of the user who performed the action
+        'action',     // Action performed (e.g., 'Created Mail', 'Updated Mail', 'Deleted Mail')
+        'details',    // Additional details (e.g., mail details)
+        'user_full_name'
     ];
+
+    // Relationship to User
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

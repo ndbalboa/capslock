@@ -90,29 +90,65 @@
           <input type="text" class="form-control" id="taxId" v-model="form.taxId">
         </div>
       </div>
-      <!-- Academic and University Information -->
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          <label for="academicRank">Academic Rank</label>
-          <select class="form-control" id="academicRank" v-model="form.academicRank">
-            <option>Professor</option>
-            <option>Associate Professor</option>
-            <option>Assistant Professor</option>
-            <option>Lecturer</option>
-            <option>Instructor</option>
-          </select>
-        </div>
-        <div class="col-md-6 mb-3">
-          <label for="universityPosition">University Position</label>
-          <select class="form-control" id="universityPosition" v-model="form.universityPosition">
-            <option>Dean</option>
-            <option>Director</option>
-            <option>Coordinator</option>
-            <option>Faculty</option>
-            <option>Staff</option>
-          </select>
-        </div>
-      </div>
+<!-- Academic and University Information -->
+<div class="row">
+  <!-- Academic Rank -->
+  <div class="col-md-4 mb-3">
+    <label for="academicRank">Academic Rank</label>
+    <select class="form-control" id="academicRank" v-model="form.academicRank">
+      <option>Professor</option>
+      <option>Associate Professor</option>
+      <option>Assistant Professor</option>
+      <option>Lecturer</option>
+      <option>Instructor</option>
+    </select>
+  </div>
+
+  <!-- University Position -->
+  <div class="col-md-4 mb-3">
+    <label for="universityPosition">University Position</label>
+    <select class="form-control" id="universityPosition" v-model="form.universityPosition">
+      <option>Dean</option>
+      <option>Director</option>
+      <option>Coordinator</option>
+      <option>Faculty</option>
+      <option>Staff</option>
+    </select>
+  </div>
+
+  <!-- Department -->
+  <div class="col-md-4 mb-3">
+    <label for="department">Department</label>
+    <select class="form-control" id="department" v-model="form.department">
+      <option>Supply and Property Management Office</option>
+      <option>Physical Plants and Facilities Office</option>
+      <option>General Services Office</option>
+      <option>HRDC Office</option>
+      <option>Medical Service Office</option>
+      <option>Quality Management System on Administrative Services Office</option>
+      <option>Human Resource Management Office</option>
+      <option>IT Support Office</option>
+      <option>Security Office</option>
+      <option>Income Generating Office</option>
+      <option>Integrated Multimedia Office</option>
+      <option>Housing Service Office</option>
+      <option>Accounting Office</option>
+      <option>Budget Office</option>
+      <option>Cash Management Office</option>
+      <option>Guidance Office</option>
+      <option>Sports Development Office</option>
+      <option>Student Organization and Services Office</option>
+      <option>Scholarship and Financial Assistance Office</option>
+      <option>Students with Special Needs Office</option>
+      <option>Students Performing Arts Office</option>
+      <option>Office of the Vice President for Research, Innovation and Extension</option>
+      <option>Research Ethics Office</option>
+      <option>Community Extension Services Office</option>
+      <option>Curriculum Development Office</option>
+    </select>
+  </div>
+</div>
+
       <!-- Address and Profile Image -->
       <div class="row">
         <div class="col-md-6 mb-3">
@@ -121,29 +157,29 @@
         <div class="row">
           <div class="col-md-4 mb-3">
             <label for="permanent_street">Street</label>
-            <input type="text" class="form-control" id="permanent_street" v-model="form.permanent_street" required>
+            <input type="text" class="form-control" id="permanent_street" placeholder="Street" v-model="form.permanent_street" required>
           </div>
           <div class="col-md-4 mb-3">
             <label for="permanent_barangay">Barangay</label>
-            <input type="text" class="form-control" id="permanent_barangay" v-model="form.permanent_barangay" required>
+            <input type="text" class="form-control" id="permanent_barangay" placeholder="Barangay" v-model="form.permanent_barangay" required>
           </div>
           <div class="col-md-4 mb-3">
             <label for="permanent_city">Town/City</label>
-            <input type="text" class="form-control" id="permanent_city" v-model="form.permanent_city">
+            <input type="text" class="form-control" id="permanent_city" placeholder="Town/City" v-model="form.permanent_city">
           </div>
         </div>
         <div class="row">
           <div class="col-md-4 mb-3">
             <label for="permanent_province">Province</label>
-            <input type="text" class="form-control" id="permanent_province" v-model="form.permanent_province" required>
+            <input type="text" class="form-control" id="permanent_province" placeholder="Province" v-model="form.permanent_province" required>
           </div>
           <div class="col-md-4 mb-3">
             <label for="permanent_country">Country</label>
-            <input type="text" class="form-control" id="permanent_country" v-model="form.permanent_country" required>
+            <input type="text" class="form-control" id="permanent_country" placeholder="Country" v-model="form.permanent_country" required>
           </div>
           <div class="col-md-4 mb-3">
             <label for="permanent_zipcode">Zipcode</label>
-            <input type="text" class="form-control" id="permanent_zipcode" v-model="form.permanent_zipcode">
+            <input type="text" class="form-control" id="permanent_zipcode" placeholder="Zipcode" v-model="form.permanent_zipcode">
           </div>
         </div>
       </div>
@@ -163,29 +199,29 @@
         <div class="row">
           <div class="col-md-4 mb-3">
             <label for="residential_street">Street</label>
-            <input type="text" class="form-control" id="residential_street" v-model="form.residential_street" required>
+            <input type="text" class="form-control" id="residential_street" placeholder="Street" v-model="form.residential_street" required>
           </div>
           <div class="col-md-4 mb-3">
             <label for="residential_barangay">Barangay</label>
-            <input type="text" class="form-control" id="residential_barangay" v-model="form.residential_barangay" required>
+            <input type="text" class="form-control" id="residential_barangay" placeholder="Barangay" v-model="form.residential_barangay" required>
           </div>
           <div class="col-md-4 mb-3">
             <label for="residential_city">Town/City</label>
-            <input type="text" class="form-control" id="residential_city" v-model="form.residential_city">
+            <input type="text" class="form-control" id="residential_city" placeholder="Town/City"v-model="form.residential_city">
           </div>
         </div>
         <div class="row">
           <div class="col-md-4 mb-3">
             <label for="residential_province">Province</label>
-            <input type="text" class="form-control" id="residential_province" v-model="form.residential_province" required>
+            <input type="text" class="form-control" id="residential_province" placeholder="Province" v-model="form.residential_province" required>
           </div>
           <div class="col-md-4 mb-3">
             <label for="residential_country">Country</label>
-            <input type="text" class="form-control" id="residential_country" v-model="form.residential_country" required>
+            <input type="text" class="form-control" id="residential_country" placeholder="Country" v-model="form.residential_country" required>
           </div>
           <div class="col-md-4 mb-3">
             <label for="residential_zipcode">Zipcode</label>
-            <input type="text" class="form-control" id="residential_zipcode" v-model="form.residential_zipcode">
+            <input type="text" class="form-control" id="residential_zipcode" placeholder="Zipcode" v-model="form.residential_zipcode">
           </div>
         </div>
       </div>
@@ -218,6 +254,7 @@ export default {
         taxId: '',
         academicRank: '',
         universityPosition: '',
+        department: '',
         permanent_street: '',
         permanent_barangay: '',
         permanent_city: '',
@@ -230,6 +267,7 @@ export default {
         residential_province: '',
         residential_country: '',
         residential_zipcode: '',
+        
       },
       sameAddress: false,
       errors: {
@@ -320,6 +358,7 @@ export default {
         residential_province: '',
         residential_country: '',
         residential_zipcode: '',
+        department: '',
       };
       this.sameAddress = false;
       this.errors = {

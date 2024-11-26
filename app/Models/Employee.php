@@ -43,6 +43,8 @@ class Employee extends Model
         'residential_province',
         'residential_country',
         'residential_zipcode',
+
+        'department',
     ];
 
     // Specify that deleted_at should be managed by soft deletes
@@ -63,5 +65,9 @@ class Employee extends Model
     {
         // Modify the query if needed, based on how you relate documents and employees
         return $this->hasMany(Document::class, 'employee_names', 'firstName', 'lastName'); // Change 'firstName' to a suitable column if necessary
+    }
+    public function mails()
+    {
+        return $this->hasMany(Mail::class, 'to', 'id');
     }
 }

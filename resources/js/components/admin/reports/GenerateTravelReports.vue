@@ -214,7 +214,15 @@ label {
   color: rgb(21, 17, 17);
 }
 
-table th, table td {
+table th {
+  text-align: center;
+  vertical-align: middle;
+  background-color: navy; 
+  color: white;  
+  height: 40px;  
+  white-space: nowrap;
+}
+table td {
   text-align: center;
   vertical-align: middle;
 }
