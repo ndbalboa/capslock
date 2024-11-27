@@ -55,7 +55,7 @@
           <td>{{ document.subject || 'Subject not found' }}</td>
           <td>{{ document.description || 'Description not found' }}</td>
           <td>{{ document.date_issued }}</td>
-          <td>{{ document.document_type }}</td>
+          <td>{{ document && document.document_type ? document.document_type.document_type : 'Travel Order' }}</td>
         </tr>
       </tbody>
     </table>

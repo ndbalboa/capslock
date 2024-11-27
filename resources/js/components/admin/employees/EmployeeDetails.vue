@@ -96,6 +96,10 @@
           <label>University Position</label>
           <input type="text" v-model="employee.universityPosition" class="form-control" :disabled="!isEditing">
         </div>
+        <div class="form-group">
+          <label>Department</label>
+          <input type="text" v-model="employee.department" class="form-control" :disabled="!isEditing">
+        </div>
       </div>
 
       <h4>Addresses</h4>

@@ -22,4 +22,14 @@ class DocumentType extends Model
     {
         return $this->hasMany(Document::class, 'document_type_id');
     }
+    public function scopeForUser(Builder $query, $user, $type = null)
+    {
+        return $query->whereJsonContains('employee_names', [['lastName' => $user->lastName, 'firstName' => $user->firstName]])
+                     ->when($type, function ($q) use ($type) {
+                         $q->whereHas('documentType', function ($query) use ($type) {
+                             $query->where('document_type', $type);
+                         });
+                     });
+    }
+
 }

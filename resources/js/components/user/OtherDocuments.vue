@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Office Orders</h1>
+    <h1>All Documents</h1>
 
     <!-- Search Bar and Top Bar Container -->
     <div class="search-and-top-bar">
@@ -122,13 +122,13 @@ export default {
     },
   },
   mounted() {
-    this.fetchDocuments(2);//Special Order
+    this.fetchDocuments(); // Fetch all documents
   },
   methods: {
-    // Fetch documents from the API
-    async fetchDocuments(documentTypeId) {
+    // Fetch all documents from the API
+    async fetchDocuments() {
       try {
-        const response = await axios.get(`/api/admin/list/documents/${documentTypeId}`);
+        const response = await axios.get("/api/documents/all");
         this.documents = response.data;
       } catch (error) {
         console.error("Error fetching documents:", error);
@@ -161,7 +161,7 @@ export default {
 </script>
 
 <style scoped>
-/* Adjust table styling */
+/* Styling remains the same */
 table {
   margin-top: 15px;
   width: 100%;
@@ -176,20 +176,18 @@ td {
 }
 
 th {
-  background-color: navy; /* Navy blue background */
+  background-color: navy;
   color: white;
 }
 
-/* Container for search bar and top bar */
 .search-and-top-bar {
   display: flex;
   flex-direction: column;
-  gap: 10px; /* Adds space between search bar and counter/pagination */
+  gap: 10px;
 }
 
-/* Search bar styling */
 .search-bar-container {
-  align-self: flex-end; /* Align search bar to the right */
+  align-self: flex-end;
   position: relative;
   width: 300px;
 }
@@ -204,28 +202,24 @@ th {
 
 .search-bar {
   width: 100%;
-  padding: 8px 12px 8px 30px; /* Add padding for icon */
+  padding: 8px 12px 8px 30px;
   font-size: 14px;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
 
-/* Top bar container for results and pagination */
 .top-bar {
   display: flex;
-  justify-content: space-between; /* Space between results counter and pagination */
-  align-items: center; /* Align items vertically in the center */
-  flex-wrap: nowrap; /* Ensure everything stays on one line */
-  gap: 10px; /* Optional: Add some space between counter and pagination */
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap;
 }
 
-/* Results Counter */
 .results-counter {
   font-size: 14px;
-  white-space: nowrap; /* Prevent wrapping */
+  white-space: nowrap;
 }
 
-/* Pagination styling */
 .pagination {
   display: flex;
   align-items: center;
@@ -252,12 +246,6 @@ th {
   cursor: not-allowed;
 }
 
-.pagination span {
-  padding: 8px 12px;
-  color: #888;
-}
-
-/* Style clickable rows */
 .clickable-row {
   cursor: pointer;
   transition: background-color 0.2s ease;

@@ -73,10 +73,58 @@
           </ul>
         </transition>
       </li>
-      <li class="nav-item">
-        <router-link class="nav-link" to="/secretary-dashboard/mail">
-          <i class="bi bi-envelope-fill me-2"></i> Mail
-        </router-link>
+      <li class="nav-item" @click.prevent="toggleMailsSubMenu">
+  <a class="nav-link d-flex align-items-center">
+    <i class="bi bi-folder2-open me-2"></i>
+    <span>Mails</span>
+    <i :class="['bi', isMailsSubMenuOpen ? 'bi-caret-down-fill' : 'bi-caret-left-fill', 'ms-auto']"></i>
+  </a>
+
+    <transition name="slide-fade">
+      <ul v-show="isMailsSubMenuOpen" class="nav flex-column ms-3 submenu">
+        <li class="nav-item">
+          <router-link class="nav-link" to="/secretary-dashboard/mail/new">
+            <i class="bi bi-file-earmark-text me-2"></i> Record Mail
+          </router-link>
+        </li>
+        <li class="nav-item">
+          <router-link class="nav-link" to="/secretary-dashboard/mail/list">
+            <i class="bi bi-file-earmark-text me-2"></i> Mails List 
+          </router-link>
+        </li>
+      </ul>
+    </transition>
+    </li>
+    <li class="nav-item" @click.prevent="toggleReportsSubMenu">
+        <a class="nav-link d-flex align-items-center">
+          <i class="bi bi-file-earmark-bar-graph-fill"></i>
+          <span>Reports</span>
+          <i :class="['bi', isReportsSubMenuOpen ? 'bi-caret-down-fill' : 'bi-caret-left-fill', 'ms-auto']"></i>
+        </a>
+        <transition name="slide-fade">
+          <ul v-show="isReportsSubMenuOpen" class="nav flex-column ms-3 submenu">
+            <li class="nav-item">
+              <router-link class="nav-link" to="/secretary-dashboard/generatedReports">
+               Generated Report
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/secretary-dashboard/generateTravelReports">
+                 Travel Order
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/secretary-dashboard/officeOrderReports">
+                 Office Order
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/secretary-dashboard/generateSpecialReports">
+                 Special Order
+              </router-link>
+            </li>
+          </ul>
+        </transition>
       </li>
       <li class="nav-item" @click.prevent="toggleSettingsSubMenu">
         <a class="nav-link d-flex align-items-center">
@@ -87,7 +135,7 @@
         <transition name="slide-fade">
           <ul v-show="isSettingsSubMenuOpen" class="nav flex-column ms-3 submenu">
             <li class="nav-item">
-              <router-link class="nav-link" to="">
+              <router-link class="nav-link" to="secretary-dashboard/adddocumenttype">
                 Document Types
               </router-link>
             </li>
@@ -102,7 +150,7 @@
               </router-link>
             </li>
             <li class="nav-item">
-              <router-link class="nav-link" to="">
+              <router-link class="nav-link" to="secretary-dashboard/settings">
                 Settings
               </router-link>
             </li>
@@ -126,6 +174,8 @@ export default {
       isDocumentsSubMenuOpen: false,
       isEmployeesSubMenuOpen: false,
       isSettingsSubMenuOpen: false,
+      isMailsSubMenuOpen:false,
+      isReportsSubMenuOpen:false,
     };
   },
   methods: {
@@ -137,6 +187,12 @@ export default {
     },
     toggleSettingsSubMenu() {
       this.isSettingsSubMenuOpen = !this.isSettingsSubMenuOpen;
+    },
+    toggleMailsSubMenu() {
+      this.isMailsSubMenuOpen = !this.isMailsSubMenuOpen;
+    },
+    toggleReportsSubMenu() {
+      this.isReportsSubMenuOpen = !this.isReportsSubMenuOpen;
     },
     async confirmLogout() {
   const confirmed = confirm('Are you sure you want to logout?');

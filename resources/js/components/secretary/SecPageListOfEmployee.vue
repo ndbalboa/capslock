@@ -156,4 +156,8 @@ export default {
 .input-group {
   width: 300px;
 }
+th {
+  background-color: navy; /* Navy blue background */
+  color: white;
+}
 </style>

@@ -1,12 +1,40 @@
 <template>
   <div class="document-list-container">
+    <!-- Loading indicator -->
+    <p v-if="loading" class="loading-message">Loading employee details...</p>
+
     <!-- Employee Header -->
-    <h2 v-if="employee.firstName && employee.lastName" class="employee-header">
+    <h2 v-if="!loading && employee.firstName && employee.lastName" class="employee-header">
       {{ employee.firstName }} {{ employee.lastName }}'s Documents
     </h2>
 
+    <!-- Document Type Tabs and Search Bar -->
+    <div v-if="!loading" class="tabs-container">
+      <div class="tabs">
+        <button
+          v-for="type in documentTypes"
+          :key="type"
+          :class="['tab', { active: selectedType === type }]"
+          @click="selectedType = type"
+        >
+          {{ type }}
+        </button>
+      </div>
+      <div class="search-container">
+        <input
+          type="text"
+          v-model="searchQuery"
+          placeholder="Search documents..."
+          class="search-input"
+        />
+        <span class="search-icon" @click="searchDocuments">
+          <i class="bi bi-search"></i> <!-- Bootstrap search icon -->
+        </span>
+      </div>
+    </div>
+
     <!-- Table displaying documents -->
-    <table v-if="documents.length > 0" class="table table-bordered">
+    <table v-if="!loading && filteredDocuments.length > 0" class="table table-bordered">
       <thead>
         <tr>
           <th>Document No</th>
@@ -18,7 +46,7 @@
       </thead>
       <tbody>
         <tr
-          v-for="document in documents"
+          v-for="document in filteredDocuments"
           :key="document.id"
           :class="{ 'selected-row': document.id === selectedDocumentId }"
           @click="selectDocument(document.id)"
@@ -27,13 +55,13 @@
           <td>{{ document.subject || 'Subject not found' }}</td>
           <td>{{ document.description || 'Description not found' }}</td>
           <td>{{ document.date_issued }}</td>
-          <td>{{ document.document_type }}</td>
+          <td>{{ document && document.document_type ? document.document_type.document_type : 'Travel Order' }}</td>
         </tr>
       </tbody>
     </table>
 
     <!-- No Documents Message -->
-    <p v-else class="no-documents">No documents found for this employee.</p>
+    <p v-if="!loading && filteredDocuments.length === 0" class="no-documents">No documents found for this document type.</p>
   </div>
 </template>
 
@@ -46,11 +74,30 @@ export default {
     return {
       employee: {},
       documents: [],
-      selectedDocumentId: null, // Tracks the selected document
+      selectedDocumentId: null,
+      selectedType: 'All',
+      documentTypes: ['All', 'Travel Order', 'Office Order', 'Special Order'],
+      loading: true,
+      searchQuery: '',
     };
   },
+  computed: {
+    filteredDocuments() {
+      let filtered = this.documents;
+      if (this.selectedType !== 'All') {
+        filtered = filtered.filter((doc) => doc.document_type === this.selectedType);
+      }
+      if (this.searchQuery) {
+        const query = this.searchQuery.toLowerCase();
+        filtered = filtered.filter((doc) =>
+          doc.subject.toLowerCase().includes(query) || 
+          doc.description.toLowerCase().includes(query)
+        );
+      }
+      return filtered;
+    },
+  },
   methods: {
-    // Fetch employee details
     fetchEmployeeDetails() {
       axios
         .get(`/api/admin/employees/${this.id}`)
@@ -60,9 +107,11 @@ export default {
         })
         .catch((error) => {
           console.error('Error fetching employee details:', error);
+        })
+        .finally(() => {
+          this.loading = false;
         });
     },
-    // Fetch documents associated with the employee
     fetchEmployeeDocuments() {
       axios
         .get(`/api/admin/employees/${this.id}/documents`)
@@ -73,14 +122,16 @@ export default {
           console.error('Error fetching employee documents:', error);
         });
     },
-    // Redirect to document details
     selectDocument(documentId) {
       this.selectedDocumentId = documentId;
-      this.$router.push({ name: 'SecPageDocumentDetails', params: { id: documentId } }); 
+      this.$router.push({ name: 'SecPageDocumentDetails', params: { id: documentId } });
+    },
+    searchDocuments() {
+      console.log('Search initiated for:', this.searchQuery);
     },
   },
   mounted() {
-    this.fetchEmployeeDetails(); 
+    this.fetchEmployeeDetails();
   },
 };
 </script>
@@ -101,6 +152,64 @@ export default {
   color: #333;
   margin-bottom: 20px;
   text-align: center;
+}
+
+.loading-message {
+  text-align: center;
+  color: #555;
+  font-size: 1.2em;
+  margin-top: 20px;
+}
+
+.tabs-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.tabs {
+  display: flex;
+}
+
+.tab {
+  padding: 10px 20px;
+  margin: 0 5px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #333;
+  transition: background-color 0.3s;
+}
+
+.tab:hover {
+  background-color: #ddd;
+}
+
+.tab.active {
+  background-color: #007bff;
+  color: white;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+}
+
+.search-input {
+  padding: 5px;
+  margin-left: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 200px; /* Adjust width as needed */
+}
+
+.search-icon {
+  margin-left: 5px;
+  cursor: pointer;
+  font-size: 1.2em; /* Adjust icon size */
+  color: #007bff; /* Icon color */
 }
 
 .table {

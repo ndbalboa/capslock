@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use PragmaRX\Google2FALaravel\Google2FA;
 
 class User extends Authenticatable
 {
@@ -27,8 +26,7 @@ class User extends Authenticatable
         'password',
         'role',
         'employee_id',
-        'status',
-        'department'
+        'status'
     ];
 
     /**
@@ -71,15 +69,5 @@ class User extends Authenticatable
     {
         $user = Auth::user();
         return $this->documents()->where('employee_id', $user->employee_id); // Limit documents to the logged-in user
-    }
-    public function generate2faSecret()
-    {
-        $google2fa = new Google2FA();
-        $secret = $google2fa->generateSecretKey();
-
-        $this->google2fa_secret = $secret;
-        $this->save();
-        
-        return $secret;
     }
 }

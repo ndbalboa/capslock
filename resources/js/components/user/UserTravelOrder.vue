@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Documents</h1>
+    <h1>Travel Orders</h1>
 
     <!-- Search Bar and Top Bar Container -->
     <div class="search-and-top-bar">
@@ -45,11 +45,15 @@
           <th>Date Issued</th>
           <th>Subject</th>
           <th>Employee Names</th>
-          <th>Document Type</th> <!-- New column for document type -->
         </tr>
       </thead>
       <tbody>
-        <tr v-for="document in paginatedDocuments" :key="document.id" @click="viewDocument(document.id)" class="clickable-row">
+        <tr
+          v-for="document in paginatedDocuments"
+          :key="document.id"
+          @click="viewDocument(document.id)"
+          class="clickable-row"
+        >
           <td>{{ document.document_no }}</td>
           <td>{{ document.date_issued }}</td>
           <td>{{ document.subject }}</td>
@@ -60,7 +64,6 @@
               </li>
             </ul>
           </td>
-          <td>{{ document.actual_document_type }}</td> <!-- Display the actual document type -->
         </tr>
       </tbody>
     </table>
@@ -119,18 +122,13 @@ export default {
     },
   },
   mounted() {
-    this.fetchDocuments(); // Fetch documents for the authenticated user
+    this.fetchDocuments(1); // Fetch documents where document_type_id = 1 (Travel Order)
   },
   methods: {
     // Fetch documents from the API
-    async fetchDocuments(documentTypeId = null) {
+    async fetchDocuments(documentTypeId) {
       try {
-        // Build the URL dynamically to include the document type if provided
-        const url = documentTypeId 
-          ? `/api/documents/user/${documentTypeId}` 
-          : `/api/documents/user`;
-
-        const response = await axios.get(url);
+        const response = await axios.get(`/api/admin/list/documents/${documentTypeId}`);
         this.documents = response.data;
       } catch (error) {
         console.error("Error fetching documents:", error);
@@ -156,8 +154,8 @@ export default {
     },
     // Redirect to the document details page
     viewDocument(documentId) {
-      this.$router.push(`/admin-dashboard/documents/${documentId}`);
-    }
+      this.$router.push(`/user-dashboard/documents/${documentId}`);
+    },
   },
 };
 </script>
@@ -215,13 +213,16 @@ th {
 /* Top bar container for results and pagination */
 .top-bar {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: space-between; /* Space between results counter and pagination */
+  align-items: center; /* Align items vertically in the center */
+  flex-wrap: nowrap; /* Ensure everything stays on one line */
+  gap: 10px; /* Optional: Add some space between counter and pagination */
 }
 
 /* Results Counter */
 .results-counter {
   font-size: 14px;
+  white-space: nowrap; /* Prevent wrapping */
 }
 
 /* Pagination styling */

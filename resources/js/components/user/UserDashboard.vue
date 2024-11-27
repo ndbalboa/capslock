@@ -14,9 +14,9 @@
           <h5>Document Count</h5>
           <table class="table table-striped">
             <tbody>
-              <tr v-for="(count, type) in documentCounts" :key="type">
-                <td>{{ type }}</td>
-                <td>{{ count }}</td>
+              <tr v-for="(document, type) in documentCounts" :key="type">
+                <td>{{ document.type }}</td>
+                <td>{{ document.count }}</td>
               </tr>
             </tbody>
           </table>
@@ -56,7 +56,7 @@ export default {
   data() {
     return {
       totalDocuments: 0,
-      documentCounts: {}, // Object to hold counts for each document type
+      documentCounts: [], // Array to hold counts for each document type
       recentActivities: [],
       loginCountToday: 0, // Variable to store today's login count
     };
@@ -70,10 +70,7 @@ export default {
       axios.get('/api/user/documents/counts') // Update the API endpoint to fetch user-specific counts
         .then(response => {
           this.totalDocuments = response.data.total; // Update according to the actual response structure
-          this.documentCounts = {}; // Initialize the documentCounts object
-          response.data.counts.forEach(item => {
-            this.documentCounts[item.document_type] = item.count; // Populate the documentCounts object
-          });
+          this.documentCounts = response.data.counts; // Directly populate documentCounts from the response
         })
         .catch(error => {
           console.error("There was an error fetching user-specific document counts:", error);

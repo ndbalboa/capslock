@@ -1,8 +1,17 @@
 <template>
-  <h2>{{ document ? document.document_type : 'Travel Order' }}</h2>
+  <h2>{{ document && document.document_type ? document.document_type.document_type : 'Travel Order' }}</h2>
   <div v-if="document" class="action-buttons">
     <button @click="viewFile" v-if="document.file_path" class="btn-primary">
       <i class="fas fa-eye"></i> View File
+    </button>
+    <button v-if="!isEditing" @click="editDocument" class="btn-secondary">
+      <i class="fas fa-edit"></i> Edit Document
+    </button>
+    <button v-if="isEditing" @click="saveDocument" class="btn-primary">
+      <i class="fas fa-save"></i> Save Changes
+    </button>
+    <button @click="deleteDocument" class="btn-danger">
+      <i class="fas fa-trash"></i> Delete Document
     </button>
   </div>
   <div class="document-details-container">
@@ -80,6 +89,7 @@ export default {
     };
   },
   computed: {
+    // Format employee names as a string joined by newlines for display
     employeeNames() {
       return this.document && this.document.employee_names 
         ? this.document.employee_names.join('\n') 
@@ -115,6 +125,10 @@ export default {
     },
     async saveDocument() {
       try {
+        // Convert employee names back into an array for saving
+        const employeeNamesArray = this.employeeNames.split('\n').map(name => name.trim());
+        this.document.employee_names = employeeNamesArray;
+
         await axios.put(`/api/admin/documents/${this.document.id}`, this.document);
         alert('Document updated successfully.');
         this.isEditing = false;
@@ -144,6 +158,20 @@ export default {
         window.open(fileUrl, '_blank');
       } else {
         console.error('Cannot view file: URL is undefined');
+      }
+    },
+    async deleteDocument() {
+      if (confirm('Are you sure you want to delete this document?')) {
+        try {
+          await axios.delete(`/api/admin/documents/${this.document.id}`);
+          alert('Document deleted successfully.');
+          this.$router.push('/documents'); 
+        } catch (error) {
+          console.error('Error deleting document:', error);
+          alert('Failed to delete document. Please try again later.');
+        }
+      } else {
+        alert('Document deletion canceled.');
       }
     },
     goBack() {

@@ -96,6 +96,10 @@
           <label>University Position</label>
           <input type="text" v-model="employee.universityPosition" class="form-control" :disabled="!isEditing">
         </div>
+        <div class="form-group">
+          <label>Department</label>
+          <input type="text" v-model="employee.department" class="form-control" :disabled="!isEditing">
+        </div>
       </div>
 
       <h4>Addresses</h4>
@@ -267,7 +271,7 @@ export default {
         try {
           await axios.delete(`/api/admin/employees/${this.employee.id}/deactivate`);
           alert('Employee has been deactivated.');
-          this.$router.push({ name: 'EmployeeList' });
+          this.$router.push({ name: 'SecPageEmployeeList' });
         } catch (error) {
           console.error('Error deactivating employee:', error);
           alert('Failed to deactivate employee');
@@ -371,5 +375,42 @@ export default {
 .ms-2 {
   margin-left: 8px;
 }
+.profile-image-container {
+  position: relative;
+  width: 150px;
+  height: 200px;
+  background-color: #e0e0e0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.profile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.button-group button {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-row {
+  display: flex;
+  gap: 15px;
+}
+
+.upload-section input[type="file"] {
+  margin-top: 10px;
+}
+
 </style>
 

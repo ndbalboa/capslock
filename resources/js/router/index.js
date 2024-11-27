@@ -43,7 +43,7 @@ import SecPageScanDocument from '../components/secretary/SecPageScanDocument.vue
 import SecPageSearchDocument from '../components/secretary/SecPageSearchDocument.vue';
 import SecPageDocumentsSpecialOrder from '../components/secretary/SecPageDocumentsSpecialOrder.vue';
 import SecPageDocumentsTravelOrder from '../components/secretary/SecPageDocumentsTravelOrder.vue';
-import SecPageEmployeeDetails from '../components/secretary/SecPageDocumentDetails.vue';
+import SecPageEmployeeDetails from '../components/secretary/SecPageEmployeeDetails.vue';
 import SecPageEmployeeDocuments from '../components/secretary/SecPageEmployeeDocuments.vue';
 import SecPageEmployeeInformation from '../components/secretary/SecPageEmployeeInformation.vue';
 import SecPageListOfEmployee from '../components/secretary/SecPageListOfEmployee.vue';
@@ -60,6 +60,10 @@ import CreateDepartmentAccount from '../components/admin/employees/CreateDepartm
 import DepartmentTravel from '../components/department/DepartmentTravel.vue';
 import AddDocumentType from '../components/admin/documents/AddDocumentType.vue';
 import DepartmentUploadDocument from '../components/department/DepartmentUploadDocument.vue';
+import OtherDocuments from '../components/user/OtherDocuments.vue';
+import SecPageMailList from '../components/secretary/SecPageMailList.vue';
+import SecPageNewMail from '../components/secretary/SecPageNewMail.vue';
+import SecPageAddDocumentType from '../components/secretary/SecPageAddDocumentType.vue';
 
 function isAuthenticated() {
   return !!localStorage.getItem('token');
@@ -137,11 +141,19 @@ const routes = [
       { path: 'documents/special-order', component: SecPageDocumentsSpecialOrder },
       { path: 'documents/:id', name: 'SecPageDocumentDetails', component: SecPageDocumentDetails},
       { path: 'employee/add', component: SecPageAddNewEmployee },
-      { path: 'employee/list', component: SecPageListOfEmployee },
+      { path: 'employee/list', name:'SecPageEmployeeList', component: SecPageListOfEmployee },
       { path: 'employee/deactivated', component: SecPageDeactivatedEmployees },
       { path: 'employee/:id', name: 'SecPageEmployeeInformation', component: SecPageEmployeeInformation },
       { path: 'secretary/employee/:id', name: 'SecPageEmployeeDetails', component: SecPageEmployeeDetails },
       { path: 'employees/:id/documents', name: 'SecPageEmployeeDocuments', component: SecPageEmployeeDocuments, props: true },
+      { path: 'generatedReports', name: 'SecPageGeneratedReports', component: GeneratedReports},
+      { path: 'officeOrderReports', name: 'SecPageGenerateOfficeReports', component: GenerateOfficeReports},
+      { path: 'generateTravelReports', name: 'SecPageGenerateTravelReports', component: GenerateTravelReports},
+      { path: 'generateSpecialReports', name: 'SecPageGenerateSpecialReports', component: GenerateSpecialReports},
+      { path: 'mail/list', component: SecPageMailList },
+      { path: 'mail/new', component: SecPageNewMail },
+      { path: 'adddocumenttype', component: SecPageAddDocumentType},
+      { path: 'settings', component: Settings },
       
     ],
   },
@@ -180,6 +192,7 @@ const routes = [
       { path: 'documents/travel-order', component: UserTravelOrder },
       { path: 'documents/office-order', component: UserOfficeOrder },
       { path: 'documents/special-order', component: UserSpecialOrder },
+      { path: 'documents/others', component: OtherDocuments },
       { path: 'user-profile', component: UserProfile }, // User profile view and edit
       { path: 'settings/change-credentials', component: ChangeCredentials }, // Change credentials option
     ],

@@ -156,7 +156,7 @@ class DocumentController extends Controller
         return response()->json($documents);
     }
 
-    // New function to fetch documents based on employee ID
+    // New function to fetch documents based on employee ID   ???????
     public function getEmployeeDocuments($id)
     {
         // Fetch the employee by ID
@@ -215,28 +215,72 @@ class DocumentController extends Controller
             return response()->json(['error' => 'An error occurred while downloading the file.'], 500);
         }
     }
-    public function getUserDocuments(Request $request)
+    //for user to view his/her documents by type
+    public function getDocumentsByTypeForUser($documentTypeId)
     {
-        // Get the authenticated user's ID
-        $userId = $request->user()->id;
+        try {
+            // Get the authenticated user
+            $user = Auth::user();
+            if (!$user) {
+                return response()->json(['error' => 'User not authenticated.'], 401);
+            }
 
-        // Get the employee associated with the authenticated user
-        $employee = User::find($userId)->employee;
+            Log::debug('Authenticated user:', ['user' => $user]);
 
-        // Check if the employee exists
-        if (!$employee) {
-            return response()->json(['message' => 'Employee not found'], 404);
+            // Concatenate the first and last names to form the full name
+            $userFullName = $user->firstName . ' ' . $user->lastName;
+            Log::debug('User full name:', ['full_name' => $userFullName]);
+
+            // Query the documents where the employee_names JSON contains the user's full name
+            $documents = Document::where('document_type_id', $documentTypeId)
+                ->whereJsonContains('employee_names', $userFullName)
+                ->get();
+
+            // Log the documents found
+            Log::debug('Documents found:', ['documents' => $documents]);
+
+            // Return the documents as a JSON response
+            return response()->json($documents);
+        } catch (\Exception $e) {
+            // Log the error and return an error response
+            Log::error('Error fetching documents:', ['error' => $e->getMessage()]);
+            return response()->json(['error' => 'An error occurred while fetching documents.'], 500);
         }
-
-        // Fetch documents associated with the employee
-        $documents = Document::whereJsonContains('employee_names', [
-            'firstName' => $employee->firstName,
-            'lastName' => $employee->lastName,
-        ])->get();
-
-        // Return the documents as a JSON response
-        return response()->json($documents);
     }
+    //for user to view his/her all documents
+    public function getAllUsersDocuments()
+    {
+        try {
+            // Get the authenticated user
+            $user = Auth::user();
+            if (!$user) {
+                return response()->json(['error' => 'User not authenticated.'], 401);
+            }
+
+            Log::debug('Authenticated user:', ['user' => $user]);
+
+            // Concatenate the first and last names to form the full name
+            $userFullName = $user->firstName . ' ' . $user->lastName;
+            Log::debug('User full name:', ['full_name' => $userFullName]);
+
+            // Query all documents where the employee_names JSON contains the user's full name
+            $documents = Document::whereJsonContains('employee_names', $userFullName)
+                ->get();
+
+            // Log the documents found
+            Log::debug('Documents found:', ['documents' => $documents]);
+
+            // Return the documents as a JSON response
+            return response()->json($documents);
+        } catch (\Exception $e) {
+            // Log the error and return an error response
+            Log::error('Error fetching documents:', ['error' => $e->getMessage()]);
+            return response()->json(['error' => 'An error occurred while fetching documents.'], 500);
+        }
+    }
+
+
+
     public function search(Request $request)
     {
         // Get the search query from the request
@@ -328,17 +372,30 @@ class DocumentController extends Controller
 
     public function getDocumentsForUser($userId)
     {
+        // Fetch the user by ID
         $user = User::find($userId);
+    
         if (!$user) {
             return response()->json(['error' => 'User not found'], 404);
         }
-
-        // Fetch documents based on the user
-        $documents = Document::whereJsonContains('employee_names', $user->firstName . ' ' . $user->lastName)->get();
-
+    
+        // Check if the user's employee is soft-deleted
+        if ($user->employee && $user->employee->trashed()) {
+            return response()->json(['error' => 'User is associated with a deactivated employee record'], 403);
+        }
+    
+        // Check if the user's status is inactive
+        if ($user->status !== 'active') {
+            return response()->json(['error' => 'User account is inactive'], 403);
+        }
+    
+        // Fetch documents where the employee_names field contains the user's full name
+        $fullName = $user->lastName . ', ' . $user->firstName;
+        $documents = Document::whereJsonContains('employee_names', $fullName)->get();
+    
         return response()->json($documents);
     }
-
+    
    
     public function getAllDocuments()
     {
@@ -418,40 +475,7 @@ class DocumentController extends Controller
 
      return response()->json($documents);
  }
-
-    // for user interface fetching documents by type
-    public function getUserDocumentsByType($type = null)
-    {
-        try {
-            $user = Auth::user();  // Get the authenticated user
-
-            // Fetch documents by type if provided, otherwise fetch all types
-            $documentsQuery = $type 
-                ? Document::forUser($user, $type) 
-                : Document::forUser($user);
-
-            // Eager load the documentType to get the actual document type
-            $documents = $documentsQuery->with('documentType')->get();
-
-            // Check if documents are found
-            if ($documents->isEmpty()) {
-                return response()->json(['message' => 'No documents found for this user'], 404);
-            }
-
-            // Add actual document type to each document
-            $documents->each(function ($document) {
-                $document->actual_document_type = $document->documentType->document_type ?? 'Unknown';
-            });
-
-            return response()->json($documents, 200);
-
-        } catch (\Exception $e) {
-            Log::error('Error fetching user documents: ' . $e->getMessage());
-            return response()->json(['error' => 'An error occurred while fetching documents'], 500);
-        }
-    }
     
-
     //for document counting on admin dashboard
     public function getDocumentCounts()
     {
@@ -469,25 +493,32 @@ class DocumentController extends Controller
             'counts' => $countsByType,    // Count grouped by document type
         ]);
     }
-    
+    //for user dashboard to show document count
     public function getUserDocumentCounts(Request $request)
     {
         $user = Auth::user(); // Get the authenticated user
 
-        // Fetch documents where employee_names contains the user's last name and first name
+        // Fetch documents where employee_names contains the user's first and last name
         $documents = Document::whereJsonContains('employee_names', $user->firstName . ' ' . $user->lastName)
-                            ->get();
+            ->get();
 
-        // Count documents by type
-        $documentCounts = $documents->groupBy('document_type')->map(function ($group) {
-            return $group->count();
+        // Group the documents by document_type_id, and get the document type name from the DocumentType model
+        $documentCounts = $documents->groupBy('document_type_id')->map(function ($group, $documentTypeId) {
+            // Fetch the document type name from the DocumentType model using the document_type_id
+            $documentType = DocumentType::find($documentTypeId);
+            return [
+                'type' => $documentType ? $documentType->document_type : 'Unknown',  // Get the document type name
+                'count' => $group->count()
+            ];
         });
 
+        // Return the response with the total count and counts grouped by document type
         return response()->json([
             'total' => $documents->count(),
             'counts' => $documentCounts,
         ]);
     }
+
 
     public function updateDocument(Request $request, $id)
     {

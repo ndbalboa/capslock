@@ -117,8 +117,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/documents', [DocumentController::class, 'getAllDocuments']);
     Route::post('/user/search', [DocumentController::class, 'userSearch']);
     Route::post('/user/advanced-search', [DocumentController::class, 'userAdvancedSearch']); 
-    Route::get('/documents/user/{type?}', [DocumentController::class, 'getUserDocumentsByType']);
-    // api.php
+    Route::get('/listdocuments/type/{typeId}', [DocumentController::class, 'getDocumentsByTypeForUser']);
+    Route::get('/documenttypes/{id}', [DocumentController::class, 'showDocumentType']);
+    Route::get('/documents/all', [DocumentController::class, 'getAllUsersDocuments']);
+
+    Route::get('/user/documents/counts', [DocumentController::class, 'getUserDocumentCounts']);
+  
     Route::get('/department/document-types', [DepartmentController::class, 'index']);
     Route::get('/department/documents', [DepartmentController::class, 'getDocumentsByDepartment']);
 
