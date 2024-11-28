@@ -64,6 +64,9 @@ import OtherDocuments from '../components/user/OtherDocuments.vue';
 import SecPageMailList from '../components/secretary/SecPageMailList.vue';
 import SecPageNewMail from '../components/secretary/SecPageNewMail.vue';
 import SecPageAddDocumentType from '../components/secretary/SecPageAddDocumentType.vue';
+import DepartmentOtherDocuments from '../components/department/DepartmentOtherDocuments.vue';
+import DepartmentSpecial from '../components/department/DepartmentSpecial.vue';
+import DepartmentOffice from '../components/department/DepartmentOffice.vue';
 
 function isAuthenticated() {
   return !!localStorage.getItem('token');
@@ -170,7 +173,14 @@ const routes = [
       children: [
         { path: '', component: DepartmentDashboard },
         { path: 'department/documents/travel-order', component: DepartmentTravel },
+        { path: 'department/documents/special-order', component: DepartmentSpecial },
+        { path: 'department/documents/office-order', component: DepartmentOffice },
+        { path: 'department/documents/others', component: DepartmentOtherDocuments },
         { path: 'upload-document', component: DepartmentUploadDocument },
+        { path: 'documents/:id', name: 'DepartmentDocumentDetails', component: DocumentDetails},
+        { path: 'mail/list', component: MailList },
+        { path: 'mail/new', component: NewMail },
+        { path: 'settings', component: Settings },
         
       ],
     },

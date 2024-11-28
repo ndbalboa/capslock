@@ -37,55 +37,19 @@
               </router-link>
             </li>
             <li class="nav-item">
-              <router-link class="nav-link" to="/department-dashboard/department/documents/travel-order">
+              <router-link class="nav-link" to="/department-dashboard/department/documents/office-order">
                 <i class="bi bi-file-earmark-text me-2"></i> Office Order
               </router-link>
             </li>
             
             <li class="nav-item">
-              <router-link class="nav-link" to="/department-dashboard/department/documents/travel-order">
+              <router-link class="nav-link" to="/department-dashboard/department/documents/Special-order">
                 <i class="bi bi-file-earmark-text me-2"></i> Special Order
               </router-link>
             </li>
-            <span>DBM</span>
             <li class="nav-item">
-              <router-link class="nav-link" to="">
-                <i class="bi bi-file-earmark-text me-2"></i> SARO
-              </router-link>
-            </li>
-            <li class="nav-item">
-              <router-link class="nav-link" to="">
-                <i class="bi bi-file-earmark-text me-2"></i> NCA
-              </router-link>
-            </li>
-            <li class="nav-item">
-              <router-link class="nav-link" to="">
-                <i class="bi bi-file-earmark-text me-2"></i> Budget Circular
-              </router-link>
-            </li>
-            <li class="nav-item">
-              <router-link class="nav-link" to="">
-                <i class="bi bi-file-earmark-text me-2"></i> Circular Letter
-              </router-link>
-            </li>
-            <li class="nav-item">
-              <router-link class="nav-link" to="">
-                <i class="bi bi-file-earmark-text me-2"></i> Advice of NCA Issued
-              </router-link>
-            </li>
-            <li class="nav-item">
-              <router-link class="nav-link" to="">
-                <i class="bi bi-file-earmark-text me-2"></i> Advisory
-              </router-link>
-            </li>
-            <li class="nav-item">
-              <router-link class="nav-link" to="">
-                <i class="bi bi-file-earmark-text me-2"></i> Joint Circular
-              </router-link>
-            </li>
-            <li class="nav-item">
-              <router-link class="nav-link" to="">
-                <i class="bi bi-file-earmark-text me-2"></i> Memorandum Circular
+              <router-link class="nav-link" to="/department-dashboard/department/documents/others">
+                <i class="bi bi-file-earmark-text me-2"></i> Others
               </router-link>
             </li>
           </ul>
@@ -102,12 +66,12 @@
 <transition name="slide-fade">
   <ul v-show="isMailsSubMenuOpen" class="nav flex-column ms-3 submenu">
     <li class="nav-item">
-      <router-link class="nav-link" to="">
+      <router-link class="nav-link" to="department-dashboard/mail/new">
         <i class="bi bi-file-earmark-text me-2"></i> Record Mail
       </router-link>
     </li>
     <li class="nav-item">
-      <router-link class="nav-link" to="">
+      <router-link class="nav-link" to="department-dashboard/mail/list">
         <i class="bi bi-file-earmark-text me-2"></i> Mails List 
       </router-link>
     </li>
@@ -128,17 +92,7 @@
               </router-link>
             </li>
             <li class="nav-item">
-              <router-link class="nav-link" to="">
-                University Position
-              </router-link>
-            </li>
-            <li class="nav-item">
-              <router-link class="nav-link" to="">
-                Academic Rank
-              </router-link>
-            </li>
-            <li class="nav-item">
-              <router-link class="nav-link" to="">
+              <router-link class="nav-link" to="department-dashboard/settings">
                 Settings
               </router-link>
             </li>

@@ -29,6 +29,7 @@ class Document extends Model
 
     protected $casts = [
         'employee_names' => 'array',
+        'student_names' => 'array',
 
     ];
     public function scopeWithinDateRange($query, $startDate, $endDate)
@@ -79,6 +80,11 @@ class Document extends Model
 {
     return $this->belongsTo(DocumentType::class, 'document_type_id');
 }
+public function employee()
+{
+    return $this->belongsTo(Employee::class);
+}
+
 
 
     

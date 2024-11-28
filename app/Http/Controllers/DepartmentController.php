@@ -11,52 +11,67 @@ use Illuminate\Http\Request;
 
 class DepartmentController extends Controller
 {
-    public function getDocumentsByDepartment(Request $request)
+    public function getDepartmentDocuments(Request $request)
     {
-        // Get the logged-in user's department
-        $user = auth()->user();
-        $department = $user->department; // Automatically use the user's department
-        $documentType = $request->input('document_type'); // E.g., 'Travel Order'
+        // Assuming the user's department is stored in the `department` field
+        $department = auth()->user()->department;
     
         if (!$department) {
-            return response()->json(['error' => 'User is not associated with a department.'], 403);
+            return response()->json(['error' => 'User does not belong to a department'], 403);
         }
     
-        // Query employees matching the department
-        $employeesInDepartment = Employee::where('department', $department)->get();
+        // Fetch employee names from the specified department
+        $employeeNames = \App\Models\Employee::where('department', $department)
+            ->pluck(\DB::raw('CONCAT(firstName, " ", lastName)'))
+            ->toArray();
     
-        // Extract names of employees in the department
-        $employeeNames = $employeesInDepartment->map(function ($employee) {
-            return $employee->lastName . ', ' . $employee->firstName;
-        })->toArray();
-    
-        // Query documents with the specified document type and matching employee names
-        $documents = Document::with('documentType')
-            ->whereHas('documentType', function ($query) use ($documentType) {
-                if ($documentType) {
-                    $query->where('document_type', $documentType);
-                }
-            })
-            ->where(function ($query) use ($employeeNames) {
-                foreach ($employeeNames as $name) {
-                    $query->orWhereJsonContains('employee_names', $name);
-                }
-            })
-            ->get()
-            ->map(function ($document) {
-                return [
-                    'document_no' => $document->document_no,
-                    'employee_names' => $document->employee_names,
-                    'document_type' => $document->documentType->document_type,
-                ];
-            });
+        // Fetch documents associated with these employee names
+        $documents = \App\Models\Document::where(function ($query) use ($employeeNames) {
+            foreach ($employeeNames as $name) {
+                $query->orWhereJsonContains('employee_names', $name);
+            }
+        })->get();
     
         return response()->json($documents);
     }
-    public function index()
+    
+    public function indexs()
     {
         $documentTypes = DocumentType::pluck('document_type'); // Fetch only document type names
         return response()->json($documentTypes);
     }
+    public function getDepartmentDocumentTypes(Request $request)
+    {
+        // Get the authenticated user's department
+        $department = auth()->user()->department;
+    
+        if (!$department) {
+            return response()->json(['error' => 'User does not belong to a department'], 403);
+        }
+    
+        // Validate and get the document type from the request
+        $documentType = $request->query('document_type');
+    
+        // Fetch employee names from the specified department
+        $employeeNames = Employee::where('department', $department)
+            ->pluck(\DB::raw('CONCAT(firstName, " ", lastName)'))
+            ->toArray();
+    
+        // Fetch documents associated with these employee names and filter by document type
+        $documents = Document::where(function ($query) use ($employeeNames) {
+            foreach ($employeeNames as $name) {
+                $query->orWhereJsonContains('employee_names', $name);
+            }
+        })
+        ->when($documentType, function ($query) use ($documentType) {
+            // Ensure the query filters by document_type_id
+            $query->where('document_type_id', $documentType);
+        })
+        ->get();
+    
+        return response()->json($documents);
+    }
+    
+    
     
 }

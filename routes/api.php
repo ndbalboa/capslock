@@ -122,9 +122,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/documents/all', [DocumentController::class, 'getAllUsersDocuments']);
 
     Route::get('/user/documents/counts', [DocumentController::class, 'getUserDocumentCounts']);
-  
-    Route::get('/department/document-types', [DepartmentController::class, 'index']);
-    Route::get('/department/documents', [DepartmentController::class, 'getDocumentsByDepartment']);
+    Route::get('/department/document-types', [DepartmentController::class, 'indexs']);
+    Route::get('/department-documents', [DepartmentController::class, 'getDepartmentDocuments']);
+    Route::get('/department-documentstype', [DepartmentController::class, 'getDepartmentDocumentTypes']);
+
+
 
     
 });

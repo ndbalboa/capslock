@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Travel Orders in {{ department }}</h1>
+    <h1>Office Orders in {{ department }}</h1>
 
     <!-- Search Bar and Top Bar Container -->
     <div class="search-and-top-bar">
@@ -43,25 +43,19 @@
           <th>Document No</th>
           <th>Subject</th>
           <th>Description</th>
-          <th>Date Issued</th>
         </tr>
       </thead>
       <tbody>
-        <tr
-          v-for="document in paginatedDocuments"
-          :key="document.id"
-          @click="goToDocumentDetails(document.id)"
-          class="clickable-row"
-        >
+        <tr v-for="document in paginatedDocuments" :key="document.id">
           <td>{{ document.document_no }}</td>
           <td>{{ document.subject }}</td>
           <td>{{ document.description }}</td>
-          <td>{{ document.date_issued }}</td>
         </tr>
       </tbody>
     </table>
   </div>
 </template>
+
 <script>
 import axios from "axios";
 
@@ -120,14 +114,14 @@ export default {
       .get("/api/user")
       .then((response) => {
         this.department = response.data.department;
-        this.fetchDocuments(1); // Fetch documents for Travel Orders (ID 1)
+        this.fetchDocuments(3); // Fetch documents for Office Orders (ID 2)
       })
       .catch((error) => {
         console.error("Error fetching user data:", error.response.data);
       });
   },
   methods: {
-    // Fetch documents based on the selected document type
+    // Fetch documents based on the selected document type (only Office Orders)
     async fetchDocuments(documentType) {
       try {
         const response = await axios.get("/api/department-documentstype", {
@@ -137,10 +131,6 @@ export default {
       } catch (error) {
         console.error("Error fetching documents:", error);
       }
-    },
-    // Redirect to document details page
-    goToDocumentDetails(documentId) {
-      this.$router.push({ name: "DepartmentDocumentDetails", params: { id: documentId } });
     },
     // Set the page to the selected value
     setPage(page) {
@@ -163,7 +153,6 @@ export default {
   },
 };
 </script>
-
 
 <style scoped>
 /* Adjust table styling */
@@ -268,24 +257,4 @@ th {
 .clickable-row:hover {
   background-color: #f0f0f0;
 }
-th:nth-child(1),
-td:nth-child(1) {
-  width: 15%; /* Document No */
-}
-
-th:nth-child(2),
-td:nth-child(2) {
-  width: 30%; /* Subject */
-}
-
-th:nth-child(3),
-td:nth-child(3) {
-  width: 40%; /* Description */
-}
-
-th:nth-child(4),
-td:nth-child(4) {
-  width: 15%; /* Date Issued */
-}
-
 </style>

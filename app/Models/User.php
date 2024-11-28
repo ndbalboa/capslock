@@ -26,7 +26,8 @@ class User extends Authenticatable
         'password',
         'role',
         'employee_id',
-        'status'
+        'status',
+        'department'
     ];
 
     /**
@@ -56,6 +57,7 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Employee::class, 'employee_id');
     }
+    
     public function document()
     {
         $fullName = $this->firstName . ' ' . $this->lastName;
